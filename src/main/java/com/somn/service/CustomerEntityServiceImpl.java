@@ -10,17 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserEntityServiceImpl implements UserEntityService {
+public class CustomerEntityServiceImpl implements CustomerEntityService {
   @Autowired
   private UserEntityRepository userEntityRepository;
   
   @Override
-  public List<UserEntity> getAllCustomers() {
-    return userEntityRepository.findAll();
+  public Optional<List<UserEntity>> getAllCustomers() {
+    return Optional.ofNullable(userEntityRepository.findAll());
   }
   
   @Override
-  public void createUser(UserEntity userEntity) {
+  public void createCustomer(UserEntity userEntity) {
     userEntityRepository.save(userEntity);
   }
   
@@ -30,12 +30,12 @@ public class UserEntityServiceImpl implements UserEntityService {
   }
   
   @Override
-  public void updateUser(UserEntity userEntity) {
+  public void updateCustomer(UserEntity userEntity) {
     userEntityRepository.save(userEntity);
   }
   
   @Override
-  public void deleteUser(Long id) {
+  public void deleteCustomer(Long id) {
     userEntityRepository.deleteById(id);
   }
 }

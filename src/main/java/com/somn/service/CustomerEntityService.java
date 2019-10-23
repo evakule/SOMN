@@ -5,14 +5,14 @@ import com.somn.model.UserEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserEntityService {
-  List<UserEntity> getAllCustomers();
+public interface CustomerEntityService {
+  Optional<List<UserEntity>> getAllCustomers();
   
-  void createUser(UserEntity userEntity);
+  void createCustomer(UserEntity userEntity);
   
   Optional<UserEntity> getById(Long id);
   
-  void updateUser(UserEntity userEntity);
+  void updateCustomer(UserEntity userEntity);
   
-  void deleteUser(Long id);
+  void deleteCustomer(Long id);
 }

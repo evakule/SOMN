@@ -1,7 +1,5 @@
 package com.somn.controller;
 
-import com.somn.model.AccountEntity;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,22 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(value = {"/fill_in_db_test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class AccountControllerTest {
-  
   @Autowired
   private MockMvc mockMvc;
-  
-  @Autowired
-  AccountController accountController;
-  
-  @Before
-  public RestTemplate restTemplate() {
-    return new RestTemplate();
-  }
-  
-  @Before
-  private AccountEntity getAccountEntity() {
-    return new AccountEntity(50050, "active");
-  }
   
   @Test
   void getAllAccounts() throws Exception {
