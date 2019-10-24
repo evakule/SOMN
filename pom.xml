@@ -90,7 +90,7 @@
 <!--                        <phase>validate</phase>-->
 <!--                        <configuration>-->
 <!--                            <logViolationsToConsole>true</logViolationsToConsole>-->
-<!--                            <configLocation>/src/main/resources/checkstyle.xml</configLocation>-->
+<!--                            <configLocation>somn/checkstyle.xml</configLocation>-->
 <!--                            <includeTestSourceDirectory>true</includeTestSourceDirectory>-->
 <!--                            <encoding>UTF-8</encoding>-->
 <!--                            <consoleOutput>true</consoleOutput>-->
