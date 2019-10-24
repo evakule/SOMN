@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CustomerController {
+public final class CustomerController {
   
   @Autowired
   private CustomerEntityService customerEntityService;
