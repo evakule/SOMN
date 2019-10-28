@@ -2,11 +2,13 @@ package com.somn.controller;
 
 import com.somn.model.AccountEntity;
 import com.somn.service.AccountEntityService;
+
 import java.util.List;
 
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public final class AccountController {
-  private static final Integer OPERATION_LIMIT = 10;
-  private static final Integer BALANCE_LIMIT = 1000000;
+  @Value("${limit.operation}")
+  private Integer operationLimit;
+  @Value("${limit.balance}")
+  private Integer balanceLimit;
   
   @Autowired
   private AccountEntityService accountEntityService;
@@ -30,7 +34,9 @@ public final class AccountController {
   }
   
   @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.GET)
-  public ResponseEntity<AccountEntity> checkBalance(final @PathVariable("id") Long id) {
+  public ResponseEntity<AccountEntity> checkBalance(
+      final @PathVariable("id") Long id
+  ) {
     if (id == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
@@ -40,7 +46,9 @@ public final class AccountController {
   }
   
   @RequestMapping(value = "api/v1/accounts", method = RequestMethod.POST)
-  public ResponseEntity<AccountEntity> createAccount(final @RequestBody AccountEntity accountEntity) {
+  public ResponseEntity<AccountEntity> createAccount(
+      final @RequestBody AccountEntity accountEntity
+  ) {
     if (accountEntity == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
@@ -50,7 +58,9 @@ public final class AccountController {
   }
   
   @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<AccountEntity> deleteAccount(final @PathVariable("id") Long id) {
+  public ResponseEntity<AccountEntity> deleteAccount(
+      final @PathVariable("id") Long id
+  ) {
     if (id == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
@@ -59,35 +69,23 @@ public final class AccountController {
     }
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}/withdraw", method = RequestMethod.PUT, params = {"amount"})
+  @RequestMapping(value = "api/v1/accounts/{id}/withdraw",
+      method = RequestMethod.PUT, params = {"amount"})
   public ResponseEntity<AccountEntity> withdrawMoney(
       final @PathVariable("id") Long id,
-      final @PathParam("amount") Integer amount) {
-    AccountEntity accountEntity = accountEntityService.getById(id).get();
-    Integer oldBalance = accountEntity.getBalance();
-    if (amount > oldBalance || amount < OPERATION_LIMIT) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      Integer newBalance = oldBalance - amount;
-      accountEntity.setBalance(newBalance);
-      accountEntityService.updateAccount(accountEntity);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+      final @PathParam("amount") Integer amount
+  ) {
+    return accountEntityService.withdrawMoneyFromAccount(id, amount,
+        operationLimit, balanceLimit);
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}/deposit", method = RequestMethod.PUT, params = {"amount"})
+  @RequestMapping(value = "api/v1/accounts/{id}/deposit",
+      method = RequestMethod.PUT, params = {"amount"})
   public ResponseEntity<AccountEntity> depositMoney(
       final @PathVariable("id") Long id,
-      final @PathParam("amount") Integer amount) {
-    AccountEntity accountEntity = accountEntityService.getById(id).get();
-    Integer oldBalance = accountEntity.getBalance();
-    if (amount + oldBalance > BALANCE_LIMIT || amount < OPERATION_LIMIT) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      Integer newBalance = oldBalance + amount;
-      accountEntity.setBalance(newBalance);
-      accountEntityService.updateAccount(accountEntity);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+      final @PathParam("amount") Integer amount
+  ) {
+    return accountEntityService.replenishAccount(id, amount,
+        operationLimit, balanceLimit);
   }
 }
