@@ -1,14 +1,15 @@
 package com.somn.service;
 
 import com.somn.model.AccountEntity;
-import com.somn.model.exception.SomnLimitException;
+import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 public final class AccountEntityServiceImpl implements AccountEntityService {
@@ -46,11 +47,12 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void withdrawMoneyFromAccount(final Long id, final Integer amount) {
+  public void withdrawMoneyFromAccount(final Long id, final Integer amount)
+      throws SomnLimitExceedException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount > oldBalance || amount < operationLimit) {
-      throw new SomnLimitException();
+      throw new SomnLimitExceedException();
     }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
@@ -58,11 +60,12 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void depositMoney(final Long id, final Integer amount) {
+  public void depositMoney(final Long id, final Integer amount)
+      throws SomnLimitExceedException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount + oldBalance > balanceLimit || amount < operationLimit) {
-      throw new SomnLimitException();
+      throw new SomnLimitExceedException();
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
