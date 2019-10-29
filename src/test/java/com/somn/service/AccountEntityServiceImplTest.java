@@ -1,6 +1,7 @@
 package com.somn.service;
 
 import com.somn.model.AccountEntity;
+import com.somn.model.exception.SomnLimitException;
 import com.somn.repository.AccountEntityRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,14 +28,14 @@ public class AccountEntityServiceImplTest {
     accountEntity = new AccountEntity(50050, "active");
   }
   
-  @Test(expected = RuntimeException.class)
+  @Test(expected = SomnLimitException.class)
   public void withdrawMoneyFromAccount() {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     accountEntityService.withdrawMoneyFromAccount(1L, 9);
     accountEntityService.withdrawMoneyFromAccount(1L, 50051);
   }
   
-  @Test(expected = RuntimeException.class)
+  @Test(expected = SomnLimitException.class)
   public void depositMoney() {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     accountEntityService.depositMoney(1L, 9);

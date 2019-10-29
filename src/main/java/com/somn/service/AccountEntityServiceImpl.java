@@ -1,16 +1,14 @@
 package com.somn.service;
 
 import com.somn.model.AccountEntity;
+import com.somn.model.exception.SomnLimitException;
 import com.somn.repository.AccountEntityRepository;
-import com.somn.util.AccountStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 
 @Service
 public final class AccountEntityServiceImpl implements AccountEntityService {
@@ -52,7 +50,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount > oldBalance || amount < operationLimit) {
-      throw new RuntimeException();
+      throw new SomnLimitException();
     }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
@@ -64,7 +62,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount + oldBalance > balanceLimit || amount < operationLimit) {
-      throw new RuntimeException();
+      throw new SomnLimitException();
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
