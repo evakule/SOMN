@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.websocket.server.PathParam;
 
+import com.somn.util.AccountStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public final class AccountController {
-  @Value("${limit.operation}")
-  private Integer operationLimit;
-  @Value("${limit.balance}")
-  private Integer balanceLimit;
-  
   @Autowired
   private AccountEntityService accountEntityService;
   
@@ -75,8 +70,12 @@ public final class AccountController {
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
   ) {
-    return accountEntityService.withdrawMoneyFromAccount(id, amount,
-        operationLimit, balanceLimit);
+    try {
+      accountEntityService.withdrawMoneyFromAccount(id, amount);
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(HttpStatus.OK);
   }
   
   @RequestMapping(value = "api/v1/accounts/{id}/deposit",
@@ -85,7 +84,11 @@ public final class AccountController {
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
   ) {
-    return accountEntityService.replenishAccount(id, amount,
-        operationLimit, balanceLimit);
+    try {
+      accountEntityService.depositMoney(id, amount);
+    } catch (Exception e) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }

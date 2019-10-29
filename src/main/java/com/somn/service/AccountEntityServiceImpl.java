@@ -2,18 +2,22 @@ package com.somn.service;
 
 import com.somn.model.AccountEntity;
 import com.somn.repository.AccountEntityRepository;
+import com.somn.util.AccountStatus;
 
 import java.util.List;
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountEntityServiceImpl implements AccountEntityService {
+public final class AccountEntityServiceImpl implements AccountEntityService {
+  @Value("${somn.operation.limit}")
+  private Integer operationLimit;
+  @Value("${somn.balance.max-amount}")
+  private Integer balanceLimit;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -44,40 +48,26 @@ public class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public ResponseEntity<AccountEntity> withdrawMoneyFromAccount(
-      final Long id,
-      final Integer amount,
-      final Integer operationLimit,
-      final Integer balanceLimit
-  ) {
+  public void withdrawMoneyFromAccount(final Long id, final Integer amount) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount > oldBalance || amount < operationLimit) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      Integer newBalance = oldBalance - amount;
-      accountEntity.setBalance(newBalance);
-      accountEntityRepository.save(accountEntity);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      throw new RuntimeException();
     }
+    Integer newBalance = oldBalance - amount;
+    accountEntity.setBalance(newBalance);
+    accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public ResponseEntity<AccountEntity> replenishAccount(
-      final Long id,
-      final Integer amount,
-      final Integer operationLimit,
-      final Integer balanceLimit
-  ) {
+  public void depositMoney(final Long id, final Integer amount) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount + oldBalance > balanceLimit || amount < operationLimit) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      Integer newBalance = oldBalance + amount;
-      accountEntity.setBalance(newBalance);
-      accountEntityRepository.save(accountEntity);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      throw new RuntimeException();
     }
+    Integer newBalance = oldBalance + amount;
+    accountEntity.setBalance(newBalance);
+    accountEntityRepository.save(accountEntity);
   }
 }

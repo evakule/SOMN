@@ -1,50 +1,43 @@
 package com.somn.service;
 
+import com.somn.model.AccountEntity;
+import com.somn.repository.AccountEntityRepository;
 import org.junit.Before;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @RunWith(SpringRunner.class)
-@SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
-@AutoConfigureMockMvc
-@TestPropertySource("/application-test.properties")
-@Sql(value = {"/somntest_init.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(value = {"/fill_in_db_test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class AccountEntityServiceImplTest {
-  @Value("${limit.operation}")
-  private Integer operationLimit;
-  @Value("${limit.balance}")
-  private Integer balanceLimit;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class AccountEntityServiceImplTest {
+  @MockBean
+  private AccountEntityRepository mockRepository;
+  
   @Autowired
-  private AccountEntityServiceImpl accountEntityService;
+  private AccountEntityService accountEntityService;
+  
+  private AccountEntity accountEntity;
   
   @Before
-  private Integer getAmount() {
-    return 100;
+  public void getAccount() {
+    accountEntity = new AccountEntity(50050, "active");
   }
   
-  @Test
-  void withdrawMoneyFromAccount() {
-    accountEntityService.withdrawMoneyFromAccount(1L, getAmount(), operationLimit, balanceLimit);
-    assertEquals(49950, accountEntityService.getById(1L).get().getBalance());
+  @Test(expected = RuntimeException.class)
+  public void withdrawMoneyFromAccount() {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    accountEntityService.withdrawMoneyFromAccount(1L, 9);
+    accountEntityService.withdrawMoneyFromAccount(1L, 50051);
   }
   
-  @Test
-  void replenishAccount() {
-    accountEntityService.replenishAccount(1L, getAmount(), operationLimit, balanceLimit);
-    assertEquals(50150, accountEntityService.getById(1L).get().getBalance());
+  @Test(expected = RuntimeException.class)
+  public void depositMoney() {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    accountEntityService.depositMoney(1L, 9);
+    accountEntityService.depositMoney(1L, 1000000);
   }
 }

@@ -67,7 +67,7 @@ class AccountControllerTest {
     //changing object
     this.mockMvc.perform(put("http://localhost:7070/api/v1/accounts/2/withdraw?amount=50"))
         .andDo(print())
-        .andExpect(status().isNoContent());
+        .andExpect(status().isOk());
     
     //checking that object was changed
     this.mockMvc.perform(get("http://localhost:7070/api/v1/accounts/2"))
@@ -82,7 +82,7 @@ class AccountControllerTest {
     //changing object
     this.mockMvc.perform(put("http://localhost:7070/api/v1/accounts/2/deposit?amount=50"))
         .andDo(print())
-        .andExpect(status().isNoContent());
+        .andExpect(status().isOk());
   
     //checking that object was changed
     this.mockMvc.perform(get("http://localhost:7070/api/v1/accounts/2"))

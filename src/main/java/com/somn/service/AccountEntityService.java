@@ -18,17 +18,7 @@ public interface AccountEntityService {
   
   void deleteAccount(Long id);
   
-  ResponseEntity<AccountEntity> withdrawMoneyFromAccount(
-      final Long id,
-      final Integer amount,
-      final Integer operationLimit,
-      final Integer balanceLimit
-  );
+  void withdrawMoneyFromAccount(final Long id, final Integer amount);
   
-  ResponseEntity<AccountEntity> replenishAccount(
-      final Long id,
-      final Integer amount,
-      final Integer operationLimit,
-      final Integer balanceLimit
-  );
+  void depositMoney(final Long id, final Integer amount);
 }
