@@ -1,6 +1,7 @@
 package com.somn.controller;
 
 import com.somn.model.AccountEntity;
+import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.service.AccountEntityService;
 
 import java.util.List;
@@ -65,28 +66,28 @@ public final class AccountController {
   
   @RequestMapping(value = "api/v1/accounts/{id}/withdraw",
       method = RequestMethod.PUT, params = {"amount"})
-  public ResponseEntity<AccountEntity> withdrawMoney(
+  public ResponseEntity<?> withdrawMoney(
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
   ) {
     try {
       accountEntityService.withdrawMoneyFromAccount(id, amount);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } catch (SomnLimitExceedException e) {
+      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(HttpStatus.OK);
   }
   
   @RequestMapping(value = "api/v1/accounts/{id}/deposit",
       method = RequestMethod.PUT, params = {"amount"})
-  public ResponseEntity<AccountEntity> depositMoney(
+  public ResponseEntity<?> depositMoney(
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
   ) {
     try {
       accountEntityService.depositMoney(id, amount);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } catch (SomnLimitExceedException e) {
+      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(HttpStatus.OK);
   }

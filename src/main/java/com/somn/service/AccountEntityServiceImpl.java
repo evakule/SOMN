@@ -17,6 +17,12 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private Integer operationLimit;
   @Value("${somn.balance.max-amount}")
   private Integer balanceLimit;
+  @Value("${somn.operation.value-exception-message}")
+  private String operationValueExceptionMessage;
+  @Value("${somn.balance.withdraw-exception-message}")
+  private String balanceWithdrawExceptionMessage;
+  @Value("${somn.balance.store-limit-exception-message}")
+  private String balanceStoreLimitException;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -51,8 +57,11 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
       throws SomnLimitExceedException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
-    if (amount > oldBalance || amount < operationLimit) {
-      throw new SomnLimitExceedException();
+    if (amount < operationLimit) {
+      throw new SomnLimitExceedException(operationValueExceptionMessage);
+    }
+    if (amount > oldBalance) {
+      throw new SomnLimitExceedException(balanceWithdrawExceptionMessage);
     }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
@@ -64,8 +73,11 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
       throws SomnLimitExceedException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
-    if (amount + oldBalance > balanceLimit || amount < operationLimit) {
-      throw new SomnLimitExceedException();
+    if (amount < operationLimit) {
+      throw new SomnLimitExceedException(operationValueExceptionMessage);
+    }
+    if (amount + oldBalance > balanceLimit) {
+      throw new SomnLimitExceedException(balanceStoreLimitException);
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
