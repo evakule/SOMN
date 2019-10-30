@@ -16,7 +16,7 @@ Installing:
 
 Set up your database properties as below
     
-    datasource.url = localhost:3306/sonm
+    datasource.url = localhost:3306/somn
     datasource.username = root
     datasource.password = 12345
     
