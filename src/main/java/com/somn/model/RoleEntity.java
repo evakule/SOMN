@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "roles")
-class RoleEntity extends BaseEntity {
+public class RoleEntity extends BaseEntity {
   @Column(name = "role_name")
   private String roleName;
 }

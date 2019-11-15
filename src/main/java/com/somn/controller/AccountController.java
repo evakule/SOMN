@@ -1,5 +1,7 @@
 package com.somn.controller;
 
+import com.somn.dto.AccountDTO;
+import com.somn.mappers.AccountMapper;
 import com.somn.model.AccountEntity;
 import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.service.AccountEntityService;
@@ -22,42 +24,54 @@ public final class AccountController {
   @Autowired
   private AccountEntityService accountEntityService;
   
-  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.GET)
-  public ResponseEntity<List<AccountEntity>> getAllAccounts() {
-    return accountEntityService.getAllAccounts().map(ResponseEntity::ok)
-        .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
-  }
+  @Autowired
+  private AccountMapper accountMapper;
   
-  @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.GET)
-  public ResponseEntity<AccountEntity> checkBalance(
-      final @PathVariable("id") Long id
-  ) {
-    if (id == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.GET)
+  public ResponseEntity<List<AccountDTO>> getAllAccounts() {
+    List<AccountEntity> accountEntityList = accountEntityService.getAllAccounts();
+    if (accountEntityList == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return accountEntityService.getById(id).map(ResponseEntity::ok)
-          .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+      List<AccountDTO> accountDTOList = accountMapper.toDtoList(accountEntityList);
+      return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
     }
   }
   
-  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.POST)
-  public ResponseEntity<AccountEntity> createAccount(
-      final @RequestBody AccountEntity accountEntity
+  @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.GET)
+  public ResponseEntity<AccountDTO> checkBalance(
+      final @PathVariable("id") Long id
   ) {
+    AccountEntity accountEntity = accountEntityService.getById(id);
     if (accountEntity == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      AccountDTO accountDTO = accountMapper.toDTO(accountEntity);
+      return new ResponseEntity<>(accountDTO, HttpStatus.OK);
+    }
+  }
+  
+  
+  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.POST)
+  public ResponseEntity<AccountDTO> createAccount(
+      final @RequestBody AccountDTO accountDTO
+  ) {
+    if (accountDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
+      AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
       accountEntityService.createAccount(accountEntity);
-      return new ResponseEntity<>(HttpStatus.CREATED);
+      return new ResponseEntity<>(accountDTO, HttpStatus.CREATED);
     }
   }
   
   @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<AccountEntity> deleteAccount(
+  public ResponseEntity<AccountDTO> deleteAccount(
       final @PathVariable("id") Long id
   ) {
-    if (id == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    AccountEntity accountEntity = accountEntityService.getById(id);
+    if (accountEntity == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       accountEntityService.deleteAccount(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);

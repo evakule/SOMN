@@ -1,7 +1,5 @@
 package com.somn.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +35,6 @@ public class AccountEntity extends BaseEntity {
   @Column(name = "account_status")
   private String accountStatus;
   
-  @JsonBackReference
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", nullable = true)
   private UserEntity userEntity;

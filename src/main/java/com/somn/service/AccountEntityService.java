@@ -5,12 +5,11 @@ import com.somn.model.AccountEntity;
 import com.somn.model.exception.SomnLimitExceedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface AccountEntityService {
-  Optional<List<AccountEntity>> getAllAccounts();
+  List<AccountEntity> getAllAccounts();
   
-  Optional<AccountEntity> getById(Long id);
+  AccountEntity getById(Long id);
   
   void createAccount(AccountEntity accountEntity);
   

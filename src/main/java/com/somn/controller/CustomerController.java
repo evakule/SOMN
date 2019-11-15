@@ -1,5 +1,7 @@
 package com.somn.controller;
 
+import com.somn.dto.UserDTO;
+import com.somn.mappers.UserMapper;
 import com.somn.model.UserEntity;
 import com.somn.service.CustomerEntityService;
 
@@ -20,35 +22,53 @@ public final class CustomerController {
   @Autowired
   private CustomerEntityService customerEntityService;
   
-  @RequestMapping(value = "api/v1/customers", method = RequestMethod.GET)
-  public ResponseEntity<List<UserEntity>> getAllCustomers() {
-    return customerEntityService.getAllCustomers().map(ResponseEntity::ok)
-        .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
-  }
+  @Autowired
+  private UserMapper userMapper;
   
-  @RequestMapping(value = "api/v1/customers", method = RequestMethod.POST)
-  public ResponseEntity<UserEntity> createNewCustomer(final @RequestBody UserEntity userEntity) {
-    if (userEntity == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+  @RequestMapping(value = "api/v1/customers", method = RequestMethod.GET)
+  public ResponseEntity<List<UserDTO>> getAllCustomers() {
+    List<UserEntity> userEntityList = customerEntityService.getAllCustomers();
+    if (userEntityList == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      customerEntityService.createCustomer(userEntity);
-      return new ResponseEntity<>(userEntity, HttpStatus.CREATED);
+      List<UserDTO> userDTOList = userMapper.toDtoList(userEntityList);
+      return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
   }
   
   @RequestMapping(value = "api/v1/customers/{id}", method = RequestMethod.GET)
-  public ResponseEntity<UserEntity> getCustomer(final @PathVariable("id") Long id) {
-    if (id == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+  public ResponseEntity<UserDTO> getCustomer(
+      final @PathVariable("id") Long id
+  ) {
+    UserEntity userEntity = customerEntityService.getById(id);
+    if (userEntity == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      UserDTO userDTO = userMapper.toDTO(userEntity);
+      return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
-    return customerEntityService.getById(id).map(ResponseEntity::ok)
-        .orElseGet(ResponseEntity.status(HttpStatus.NOT_FOUND)::build);
+  }
+  
+  @RequestMapping(value = "api/v1/customers", method = RequestMethod.POST)
+  public ResponseEntity<UserDTO> createNewCustomer(
+      final @RequestBody UserDTO userDTO
+  ) {
+    if (userDTO == null) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } else {
+      UserEntity userEntity = userMapper.toEntity(userDTO);
+      customerEntityService.createCustomer(userEntity);
+      return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+    }
   }
   
   @RequestMapping(value = "api/v1/customers/{id}", method = RequestMethod.DELETE)
-  public ResponseEntity<UserEntity> deactivateUser(final @PathVariable("id") Long id) {
-    if (id == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+  public ResponseEntity<UserDTO> deactivateUser(
+      final @PathVariable("id") Long id
+  ) {
+    UserEntity userEntity = customerEntityService.getById(id);
+    if (userEntity == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       customerEntityService.deleteCustomer(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);

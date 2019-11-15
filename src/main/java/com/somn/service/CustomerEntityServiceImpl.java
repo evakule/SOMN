@@ -4,7 +4,6 @@ import com.somn.model.UserEntity;
 import com.somn.repository.UserEntityRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,8 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private UserEntityRepository userEntityRepository;
   
   @Override
-  public Optional<List<UserEntity>> getAllCustomers() {
-    return Optional.ofNullable(userEntityRepository.findAll());
+  public List<UserEntity> getAllCustomers() {
+    return userEntityRepository.findAll();
   }
   
   @Override
@@ -25,8 +24,8 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   @Override
-  public Optional<UserEntity> getById(Long id) {
-    return userEntityRepository.findById(id);
+  public UserEntity getById(Long id) {
+    return userEntityRepository.getOne(id);
   }
   
   @Override

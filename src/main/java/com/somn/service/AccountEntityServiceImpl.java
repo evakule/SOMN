@@ -5,7 +5,6 @@ import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,13 +27,13 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private AccountEntityRepository accountEntityRepository;
   
   @Override
-  public Optional<List<AccountEntity>> getAllAccounts() {
-    return Optional.ofNullable(accountEntityRepository.findAll());
+  public List<AccountEntity> getAllAccounts() {
+    return accountEntityRepository.findAll();
   }
   
   @Override
-  public Optional<AccountEntity> getById(final Long id) {
-    return accountEntityRepository.findById(id);
+  public AccountEntity getById(final Long id) {
+    return accountEntityRepository.getOne(id);
   }
   
   @Override
