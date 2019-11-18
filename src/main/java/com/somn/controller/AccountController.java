@@ -12,18 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(value = "api/v1/accounts")
 public final class AccountController {
   @Autowired
   private AccountEntityService accountEntityService;
   
-  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.GET)
+  @GetMapping
   public ResponseEntity<List<AccountDTO>> getAllAccounts() {
     List<AccountDTO> accountDTOList = accountEntityService.getAllAccounts();
     if (CollectionUtils.isEmpty(accountDTOList)) {
@@ -33,7 +37,7 @@ public final class AccountController {
     }
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.GET)
+  @GetMapping(value = "{id}")
   public ResponseEntity<AccountDTO> checkBalance(
       final @PathVariable("id") Long id
   ) {
@@ -45,8 +49,7 @@ public final class AccountController {
     }
   }
   
-  
-  @RequestMapping(value = "api/v1/accounts", method = RequestMethod.POST)
+  @PostMapping
   public ResponseEntity<AccountDTO> createAccount(
       final @RequestBody AccountDTO accountDTO
   ) {
@@ -58,7 +61,7 @@ public final class AccountController {
     }
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}", method = RequestMethod.DELETE)
+  @DeleteMapping(value = "{id}")
   public ResponseEntity<AccountDTO> deleteAccount(
       final @PathVariable("id") Long id
   ) {
@@ -71,8 +74,7 @@ public final class AccountController {
     }
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}/withdraw",
-      method = RequestMethod.PUT, params = {"amount"})
+  @PutMapping(value = "{id}/withdraw", params = {"amount"})
   public ResponseEntity<?> withdrawMoney(
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
@@ -85,8 +87,7 @@ public final class AccountController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
   
-  @RequestMapping(value = "api/v1/accounts/{id}/deposit",
-      method = RequestMethod.PUT, params = {"amount"})
+  @PutMapping(value = "{id}/deposit", params = {"amount"})
   public ResponseEntity<?> depositMoney(
       final @PathVariable("id") Long id,
       final @PathParam("amount") Integer amount
