@@ -1,4 +1,4 @@
-package com.somn.model.exception;
+package com.somn.exception;
 
 import lombok.AllArgsConstructor;
 
