@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public final class CustomerController {
   @RequestMapping(value = "api/v1/customers", method = RequestMethod.GET)
   public ResponseEntity<List<UserDTO>> getAllCustomers() {
     List<UserDTO> userDTOList = customerEntityService.getAllCustomers();
-    if (userDTOList == null) {
+    if (CollectionUtils.isEmpty(userDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(userDTOList, HttpStatus.OK);

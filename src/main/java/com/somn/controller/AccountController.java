@@ -1,8 +1,6 @@
 package com.somn.controller;
 
 import com.somn.dto.AccountDTO;
-import com.somn.mappers.AccountMapper;
-import com.somn.model.AccountEntity;
 import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.service.AccountEntityService;
 
@@ -13,6 +11,7 @@ import javax.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,7 @@ public final class AccountController {
   @RequestMapping(value = "api/v1/accounts", method = RequestMethod.GET)
   public ResponseEntity<List<AccountDTO>> getAllAccounts() {
     List<AccountDTO> accountDTOList = accountEntityService.getAllAccounts();
-    if (accountDTOList == null) {
+    if (CollectionUtils.isEmpty(accountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
