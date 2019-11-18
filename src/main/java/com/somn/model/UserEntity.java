@@ -1,7 +1,5 @@
 package com.somn.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +45,6 @@ public class UserEntity extends BaseEntity {
       inverseJoinColumns = {@JoinColumn(name = "role_id")})
   private Set<RoleEntity> roles;
   
-  @JsonManagedReference
   @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<AccountEntity> accounts;
 }

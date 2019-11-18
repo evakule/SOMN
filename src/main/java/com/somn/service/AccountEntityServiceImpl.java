@@ -1,11 +1,12 @@
 package com.somn.service;
 
+import com.somn.dto.AccountDTO;
+import com.somn.mappers.AccountMapper;
 import com.somn.model.AccountEntity;
 import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,23 +28,30 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Autowired
   private AccountEntityRepository accountEntityRepository;
   
+  @Autowired
+  private AccountMapper accountMapper;
+  
   @Override
-  public Optional<List<AccountEntity>> getAllAccounts() {
-    return Optional.ofNullable(accountEntityRepository.findAll());
+  public List<AccountDTO> getAllAccounts() {
+    List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
+    return accountMapper.toDtoList(accountEntityList);
   }
   
   @Override
-  public Optional<AccountEntity> getById(final Long id) {
-    return accountEntityRepository.findById(id);
+  public AccountDTO getById(final Long id) {
+    AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    return accountMapper.toDTO(accountEntity);
   }
   
   @Override
-  public void createAccount(final AccountEntity accountEntity) {
+  public void createAccount(final AccountDTO accountDTO) {
+    AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public void updateAccount(final AccountEntity accountEntity) {
+  public void updateAccount(final AccountDTO accountDTO) {
+    AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
     accountEntityRepository.save(accountEntity);
   }
   

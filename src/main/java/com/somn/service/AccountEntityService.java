@@ -1,20 +1,19 @@
 package com.somn.service;
 
-import com.somn.model.AccountEntity;
+import com.somn.dto.AccountDTO;
 
 import com.somn.model.exception.SomnLimitExceedException;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface AccountEntityService {
-  Optional<List<AccountEntity>> getAllAccounts();
+  List<AccountDTO> getAllAccounts();
   
-  Optional<AccountEntity> getById(Long id);
+  AccountDTO getById(Long id);
   
-  void createAccount(AccountEntity accountEntity);
+  void createAccount(AccountDTO accountDTO);
   
-  void updateAccount(AccountEntity accountEntity);
+  void updateAccount(AccountDTO accountDTO);
   
   void deleteAccount(Long id);
   
