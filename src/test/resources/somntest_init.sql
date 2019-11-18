@@ -13,9 +13,9 @@ CREATE TABLE users
 
 CREATE TABLE accounts
 (
-    id             BIGINT      NOT NULL,
-    balance        INT         NOT NULL,
-    account_status VARCHAR(10) NOT NULL,
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    balance        INT                               NOT NULL,
+    account_status VARCHAR(10)                       NOT NULL,
     user_id        BIGINT REFERENCES users (id)
 );
 
