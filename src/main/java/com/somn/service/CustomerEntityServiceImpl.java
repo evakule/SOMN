@@ -1,5 +1,7 @@
 package com.somn.service;
 
+import com.somn.dto.UserDTO;
+import com.somn.mappers.UserMapper;
 import com.somn.model.UserEntity;
 import com.somn.repository.UserEntityRepository;
 
@@ -13,23 +15,30 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   @Autowired
   private UserEntityRepository userEntityRepository;
   
+  @Autowired
+  private UserMapper userMapper;
+  
   @Override
-  public List<UserEntity> getAllCustomers() {
-    return userEntityRepository.findAll();
+  public List<UserDTO> getAllCustomers() {
+    List<UserEntity> userEntityList = userEntityRepository.findAll();
+    return userMapper.toDtoList(userEntityList);
   }
   
   @Override
-  public void createCustomer(UserEntity userEntity) {
+  public void createCustomer(UserDTO userDTO) {
+    UserEntity userEntity = userMapper.toEntity(userDTO);
     userEntityRepository.save(userEntity);
   }
   
   @Override
-  public UserEntity getById(Long id) {
-    return userEntityRepository.getOne(id);
+  public UserDTO getById(Long id) {
+    UserEntity userEntity = userEntityRepository.getOne(id);
+    return userMapper.toDTO(userEntity);
   }
   
   @Override
-  public void updateCustomer(UserEntity userEntity) {
+  public void updateCustomer(UserDTO userDTO) {
+    UserEntity userEntity = userMapper.toEntity(userDTO);
     userEntityRepository.save(userEntity);
   }
   

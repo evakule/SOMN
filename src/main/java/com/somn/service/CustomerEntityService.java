@@ -1,17 +1,17 @@
 package com.somn.service;
 
-import com.somn.model.UserEntity;
+import com.somn.dto.UserDTO;
 
 import java.util.List;
 
 public interface CustomerEntityService {
-  List<UserEntity> getAllCustomers();
+  List<UserDTO> getAllCustomers();
   
-  void createCustomer(UserEntity userEntity);
+  void createCustomer(UserDTO userDTO);
   
-  UserEntity getById(Long id);
+  UserDTO getById(Long id);
   
-  void updateCustomer(UserEntity userEntity);
+  void updateCustomer(UserDTO userDTO);
   
   void deleteCustomer(Long id);
 }

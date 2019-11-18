@@ -1,8 +1,6 @@
 package com.somn.controller;
 
 import com.somn.dto.UserDTO;
-import com.somn.mappers.UserMapper;
-import com.somn.model.UserEntity;
 import com.somn.service.CustomerEntityService;
 
 import java.util.List;
@@ -22,16 +20,12 @@ public final class CustomerController {
   @Autowired
   private CustomerEntityService customerEntityService;
   
-  @Autowired
-  private UserMapper userMapper;
-  
   @RequestMapping(value = "api/v1/customers", method = RequestMethod.GET)
   public ResponseEntity<List<UserDTO>> getAllCustomers() {
-    List<UserEntity> userEntityList = customerEntityService.getAllCustomers();
-    if (userEntityList == null) {
+    List<UserDTO> userDTOList = customerEntityService.getAllCustomers();
+    if (userDTOList == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      List<UserDTO> userDTOList = userMapper.toDtoList(userEntityList);
       return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
   }
@@ -40,11 +34,10 @@ public final class CustomerController {
   public ResponseEntity<UserDTO> getCustomer(
       final @PathVariable("id") Long id
   ) {
-    UserEntity userEntity = customerEntityService.getById(id);
-    if (userEntity == null) {
+    UserDTO userDTO = customerEntityService.getById(id);
+    if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      UserDTO userDTO = userMapper.toDTO(userEntity);
       return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
   }
@@ -56,8 +49,7 @@ public final class CustomerController {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
-      UserEntity userEntity = userMapper.toEntity(userDTO);
-      customerEntityService.createCustomer(userEntity);
+      customerEntityService.createCustomer(userDTO);
       return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
     }
   }
@@ -66,8 +58,8 @@ public final class CustomerController {
   public ResponseEntity<UserDTO> deactivateUser(
       final @PathVariable("id") Long id
   ) {
-    UserEntity userEntity = customerEntityService.getById(id);
-    if (userEntity == null) {
+    UserDTO userDTO = customerEntityService.getById(id);
+    if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       customerEntityService.deleteCustomer(id);

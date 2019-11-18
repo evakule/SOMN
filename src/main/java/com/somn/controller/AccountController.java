@@ -24,16 +24,12 @@ public final class AccountController {
   @Autowired
   private AccountEntityService accountEntityService;
   
-  @Autowired
-  private AccountMapper accountMapper;
-  
   @RequestMapping(value = "api/v1/accounts", method = RequestMethod.GET)
   public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-    List<AccountEntity> accountEntityList = accountEntityService.getAllAccounts();
-    if (accountEntityList == null) {
+    List<AccountDTO> accountDTOList = accountEntityService.getAllAccounts();
+    if (accountDTOList == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      List<AccountDTO> accountDTOList = accountMapper.toDtoList(accountEntityList);
       return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
     }
   }
@@ -42,11 +38,10 @@ public final class AccountController {
   public ResponseEntity<AccountDTO> checkBalance(
       final @PathVariable("id") Long id
   ) {
-    AccountEntity accountEntity = accountEntityService.getById(id);
-    if (accountEntity == null) {
+    AccountDTO accountDTO = accountEntityService.getById(id);
+    if (accountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      AccountDTO accountDTO = accountMapper.toDTO(accountEntity);
       return new ResponseEntity<>(accountDTO, HttpStatus.OK);
     }
   }
@@ -59,8 +54,7 @@ public final class AccountController {
     if (accountDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
-      AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
-      accountEntityService.createAccount(accountEntity);
+      accountEntityService.createAccount(accountDTO);
       return new ResponseEntity<>(accountDTO, HttpStatus.CREATED);
     }
   }
@@ -69,8 +63,8 @@ public final class AccountController {
   public ResponseEntity<AccountDTO> deleteAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountEntity accountEntity = accountEntityService.getById(id);
-    if (accountEntity == null) {
+    AccountDTO accountDTO = accountEntityService.getById(id);
+    if (accountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       accountEntityService.deleteAccount(id);
