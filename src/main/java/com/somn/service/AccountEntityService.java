@@ -2,7 +2,7 @@ package com.somn.service;
 
 import com.somn.dto.AccountDTO;
 
-import com.somn.model.exception.SomnLimitExceedException;
+import com.somn.exception.SomnLimitExceedException;
 
 import java.util.List;
 

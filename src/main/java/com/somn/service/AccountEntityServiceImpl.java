@@ -1,9 +1,9 @@
 package com.somn.service;
 
 import com.somn.dto.AccountDTO;
+import com.somn.exception.SomnLimitExceedException;
 import com.somn.mappers.AccountMapper;
 import com.somn.model.AccountEntity;
-import com.somn.model.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
 
 import java.util.List;
