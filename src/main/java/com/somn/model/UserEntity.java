@@ -1,5 +1,6 @@
 package com.somn.model;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Java Bean that represents User.
@@ -31,7 +34,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "users")
-public class UserEntity extends BaseEntity {
+public class UserEntity extends BaseEntity implements UserDetails {
   @Column(name = "first_name")
   private String firstName;
   @Column(name = "encrypted_password")
@@ -39,7 +42,7 @@ public class UserEntity extends BaseEntity {
   @Column(name = "user_status")
   private String userStatus;
   
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "FK_USER_ROLE",
       joinColumns = {@JoinColumn(name = "user_id")},
       inverseJoinColumns = {@JoinColumn(name = "role_id")})
@@ -47,4 +50,39 @@ public class UserEntity extends BaseEntity {
   
   @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   private List<AccountEntity> accounts;
+  
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return roles;
+  }
+  
+  @Override
+  public String getPassword() {
+    return encryptedPassword;
+  }
+  
+  @Override
+  public String getUsername() {
+    return firstName;
+  }
+  
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+  
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+  
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+  
+  @Override
+  public boolean isEnabled() {
+    return userStatus.equals("active");
+  }
 }

@@ -8,6 +8,8 @@ import com.somn.repository.UserEntityRepository;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -45,5 +47,15 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public void deleteCustomer(Long id) {
     userEntityRepository.deleteById(id);
+  }
+  
+  @Override
+  public UserDetails loadUserByUsername(String firstName)
+      throws UsernameNotFoundException {
+    UserEntity userEntity = userEntityRepository.findByFirstName(firstName);
+    if (userEntity == null) {
+      throw new UsernameNotFoundException("User not found");
+    }
+    return userEntity;
   }
 }

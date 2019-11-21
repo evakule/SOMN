@@ -77,6 +77,17 @@ class RightNamingTest {
   }
   
   @Test
+  void securityNamingRule() {
+    ArchRule serviceNamingRule = classes()
+        .that()
+        .resideInAPackage("..security..")
+        .should()
+        .haveSimpleNameContaining("Security");
+    
+    serviceNamingRule.check(importedClasses);
+  }
+  
+  @Test
   void serviceNamingRule() {
     ArchRule serviceNamingRule = classes()
         .that()

@@ -1,10 +1,11 @@
 package com.somn.service;
 
 import com.somn.dto.UserDTO;
-
 import java.util.List;
 
-public interface CustomerEntityService {
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface CustomerEntityService extends UserDetailsService {
   List<UserDTO> getAllCustomers();
   
   void createCustomer(UserDTO userDTO);
