@@ -119,12 +119,4 @@ class AccountControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("{\"id\":2,\"balance\":50100,\"accountStatus\":\"active\"}"));
   }
-  
-  // Negative scenario for spring security
-  @Test
-  void getCustomer() throws Exception {
-    this.mockMvc.perform(get("/api/v1/customers/2"))
-        .andDo(print())
-        .andExpect(status().isForbidden());
-  }
 }

@@ -112,12 +112,4 @@ class CustomerControllerTest {
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
                 "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\"}]}]"));
   }
-  
-  // Negative scenario for spring security
-  @Test
-  void checkBalance() throws Exception {
-    this.mockMvc.perform(get("/api/v1/accounts/2"))
-        .andDo(print())
-        .andExpect(status().isForbidden());
-  }
 }
