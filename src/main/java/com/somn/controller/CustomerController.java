@@ -59,7 +59,7 @@ public final class CustomerController {
   }
   
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<UserDTO> deactivateUser(
+  public ResponseEntity<UserDTO> deactivateCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);

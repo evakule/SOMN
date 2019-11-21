@@ -18,9 +18,10 @@ class LayerTest {
         .layer("Service").definedBy("..service..")
         .layer("Mapper").definedBy("..mappers..")
         .layer("Repository").definedBy("..repository..")
+        .layer("Security").definedBy("..security..")
     
         .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
-        .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller")
+        .whereLayer("Service").mayOnlyBeAccessedByLayers("Controller", "Security")
         .whereLayer("Repository").mayOnlyBeAccessedByLayers("Service")
         .whereLayer("Mapper").mayOnlyBeAccessedByLayers("Service");
     
