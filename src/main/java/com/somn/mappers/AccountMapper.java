@@ -22,10 +22,10 @@ public interface AccountMapper {
   default List<AccountDTO> toDtoListWithoutBalance(List<AccountEntity> accountEntityList) {
     return accountEntityList
         .stream()
-        .map(a -> new AccountDTO(
-            a.getId(),
-            a.getAccountStatus(),
-            a.getUserEntity().getId()))
+        .map(accountEntity -> new AccountDTO(
+            accountEntity.getId(),
+            accountEntity.getAccountStatus(),
+            accountEntity.getUserEntity().getId()))
         .collect(Collectors.toList());
   }
 }
