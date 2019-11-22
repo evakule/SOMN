@@ -13,8 +13,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
-
 /**
  * Base class with, property ID.
  *
@@ -35,7 +33,7 @@ public class AccountEntity extends BaseEntity {
   @Column(name = "account_status")
   private String accountStatus;
   
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
   @JoinColumn(name = "user_id", nullable = true)
   private UserEntity userEntity;
   
