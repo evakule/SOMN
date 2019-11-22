@@ -38,9 +38,22 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
+  public List<AccountDTO> getAllAccountsWithoutBalance() {
+    List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
+    return accountMapper.toDtoListWithoutBalance(accountEntityList);
+  }
+  
+  @Override
   public AccountDTO getById(final Long id) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     return accountMapper.toDTO(accountEntity);
+  }
+  
+  public AccountDTO getAccountByIdWithoutBalance(final Long id) {
+    AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    AccountDTO accountDTO = accountMapper.toDTO(accountEntity);
+    accountDTO.setBalance(null);
+    return accountDTO;
   }
   
   @Override
@@ -50,9 +63,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void updateAccount(final AccountDTO accountDTO) {
-    AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
-    accountEntityRepository.save(accountEntity);
+  public List<AccountDTO> getAllCustomerAccountsById(Long id) {
+    List<AccountEntity> accountEntityList = accountEntityRepository.getAllByUserEntityId(id);
+    return accountMapper.toDtoList(accountEntityList);
   }
   
   @Override

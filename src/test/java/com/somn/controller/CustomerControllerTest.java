@@ -55,14 +55,15 @@ class CustomerControllerTest {
             "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":\"Vakulenko\"," +
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}],\"accounts\":[]}," +
                 "" +
-                "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"" +
-                ",\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
-                "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\"}]}," +
+                "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
+                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
+                "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\",\"userId\":null}]}," +
                 "" +
                 "{\"id\":3,\"firstName\":\"Vasya\",\"encryptedPassword\":\"Antonov\"," +
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
-                "\"accounts\":[{\"id\":2,\"balance\":50050,\"accountStatus\":\"active\"}," +
-                "{\"id\":3,\"balance\":123456789,\"accountStatus\":\"active\"}]}]"));
+                "\"accounts\":[{\"id\":2,\"balance\":50050,\"accountStatus\":\"active\"," +
+                "\"userId\":null},{\"id\":3,\"balance\":123456789,\"accountStatus\":\"active\"," +
+                "\"userId\":null}]}]"));
   }
   
   @Test
@@ -70,10 +71,10 @@ class CustomerControllerTest {
     this.mockMvc.perform(get("/api/v1/customers/2"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string(
-            "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
-                "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\"}]}"));
+        .andExpect(content().string("{\"id\":2,\"firstName\":\"Andrew\"," +
+            "\"encryptedPassword\":\"Kos\",\"userStatus\":\"active\",\"roles\":[{\"id\":3," +
+            "\"roleName\":\"CUSTOMER\"}],\"accounts\":[{\"id\":1,\"balance\":50050," +
+            "\"accountStatus\":\"active\",\"userId\":null}]}"));
   }
   
   @Test
@@ -108,8 +109,11 @@ class CustomerControllerTest {
         .andExpect(content().string(
             "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":\"Vakulenko\"," +
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]," +
-                "\"accounts\":[]},{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
+                "\"accounts\":[]}," +
+                "" +
+                "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]," +
-                "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\"}]}]"));
+                "\"accounts\":[{\"id\":1,\"balance\":50050,\"accountStatus\":\"active\"," +
+                "\"userId\":null}]}]"));
   }
 }

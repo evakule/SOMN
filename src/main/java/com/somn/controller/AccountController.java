@@ -2,6 +2,7 @@ package com.somn.controller;
 
 import com.somn.dto.AccountDTO;
 import com.somn.exception.SomnLimitExceedException;
+import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import javax.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "api/v1/accounts")
-public final class AccountController {
+public class AccountController {
   @Autowired
   private AccountEntityService accountEntityService;
   
-  @GetMapping
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
+  @GetMapping(value = "/all")
   public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-    List<AccountDTO> accountDTOList = accountEntityService.getAllAccounts();
+    List<AccountDTO> accountDTOList = accountEntityService.getAllAccountsWithoutBalance();
     if (CollectionUtils.isEmpty(accountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
@@ -37,11 +42,12 @@ public final class AccountController {
     }
   }
   
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "{id}")
-  public ResponseEntity<AccountDTO> checkBalance(
+  public ResponseEntity<AccountDTO> getAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountDTO accountDTO = accountEntityService.getById(id);
+    AccountDTO accountDTO = accountEntityService.getAccountByIdWithoutBalance(id);
     if (accountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
@@ -49,6 +55,7 @@ public final class AccountController {
     }
   }
   
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
   public ResponseEntity<AccountDTO> createAccount(
       final @RequestBody AccountDTO accountDTO
@@ -61,6 +68,7 @@ public final class AccountController {
     }
   }
   
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
   public ResponseEntity<AccountDTO> deleteAccount(
       final @PathVariable("id") Long id
@@ -74,6 +82,7 @@ public final class AccountController {
     }
   }
   
+  @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/withdraw", params = {"amount"})
   public ResponseEntity<?> withdrawMoney(
       final @PathVariable("id") Long id,
@@ -87,6 +96,7 @@ public final class AccountController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
   
+  @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/deposit", params = {"amount"})
   public ResponseEntity<?> depositMoney(
       final @PathVariable("id") Long id,
@@ -98,5 +108,25 @@ public final class AccountController {
       return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(HttpStatus.OK);
+  }
+  
+  @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+  @GetMapping
+  public ResponseEntity<List<AccountDTO>> checkBalanceByCustomer() {
+    List<AccountDTO> accountDTOList = accountEntityService
+        .getAllCustomerAccountsById(getUserIdFromSession());
+    if (CollectionUtils.isEmpty(accountDTOList)) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
+    }
+  }
+  
+  private static Long getUserIdFromSession() {
+    Authentication authentication = SecurityContextHolder
+        .getContext()
+        .getAuthentication();
+    UserEntity userEntity = (UserEntity) authentication.getPrincipal();
+    return userEntity.getId();
   }
 }

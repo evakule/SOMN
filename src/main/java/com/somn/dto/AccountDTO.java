@@ -11,9 +11,11 @@ public class AccountDTO {
   private Long id;
   private Integer balance;
   private String accountStatus;
+  private Long userId;
   
-  public AccountDTO(Long id, String accountStatus) {
+  public AccountDTO(Long id, String accountStatus, Long userId) {
     this.id = id;
     this.accountStatus = accountStatus;
+    this.userId = userId;
   }
 }
