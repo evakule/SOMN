@@ -35,12 +35,12 @@ public class AccountController {
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
   public ResponseEntity<List<AccountantAccountDTO>> getAllAccounts() {
-    List<AccountantAccountDTO> customerAccountDTOList =
+    List<AccountantAccountDTO> accountantAccountDTOList =
         accountEntityService.getAllAccounts();
-    if (CollectionUtils.isEmpty(customerAccountDTOList)) {
+    if (CollectionUtils.isEmpty(accountantAccountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(customerAccountDTOList, HttpStatus.OK);
+      return new ResponseEntity<>(accountantAccountDTOList, HttpStatus.OK);
     }
   }
   
