@@ -1,5 +1,6 @@
 package com.somn.service;
 
+import com.somn.dto.CustomerAccountDTO;
 import com.somn.model.AccountEntity;
 import com.somn.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
@@ -23,6 +24,16 @@ public class AccountEntityServiceImplTest {
   private AccountEntityService accountEntityService;
   
   private AccountEntity accountEntity;
+  
+  private CustomerAccountDTO negativeCustomerAccountDTO =
+      new CustomerAccountDTO(
+          4L, 1000001, "active", 2L
+      );
+  
+  private CustomerAccountDTO positiveCustomerAccountDTO =
+      new CustomerAccountDTO(
+          4L, 50050, "active", 2L
+      );
   
   @Before
   public void getAccount() {
@@ -57,5 +68,21 @@ public class AccountEntityServiceImplTest {
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     accountEntityService.depositMoney(1L, 100);
     Assertions.assertEquals(50150, mockRepository.getOne(1L).getBalance());
+  }
+  
+  @Test(expected = SomnLimitExceedException.class)
+  public void createAccountNegativeScenario() throws SomnLimitExceedException {
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.getOne(4L)).thenReturn(accountEntity);
+    accountEntityService.createAccount(negativeCustomerAccountDTO);
+    Assertions.assertEquals(accountEntity, mockRepository.getOne(4L));
+  }
+  
+  @Test
+  public void createAccountPositiveScenario() throws SomnLimitExceedException {
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.getOne(4L)).thenReturn(accountEntity);
+    accountEntityService.createAccount(positiveCustomerAccountDTO);
+    Assertions.assertEquals(accountEntity, mockRepository.getOne(4L));
   }
 }

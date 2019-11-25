@@ -12,7 +12,5 @@ public interface CustomerEntityService extends UserDetailsService {
   
   UserDTO getById(Long id);
   
-  void updateCustomer(UserDTO userDTO);
-  
   void deleteCustomer(Long id);
 }

@@ -1,16 +1,13 @@
 package com.somn.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.somn.dto.AccountDTO;
-import com.somn.model.UserEntity;
+import com.somn.dto.CustomerAccountDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -38,7 +35,7 @@ class AccountControllerTest {
   @Autowired
   private MockMvc mockMvc;
   
-  private AccountDTO accountEntity = new AccountDTO(4L, 1000, "active", 3L);
+  private CustomerAccountDTO accountEntity = new CustomerAccountDTO(4L, 1000, "active", 3L);
   
   @Test
   @WithMockUser(roles = {"ACCOUNTANT"})
@@ -46,10 +43,10 @@ class AccountControllerTest {
     this.mockMvc.perform(get("/api/v1/accounts/all"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string("[{\"id\":1,\"balance\":null," +
-            "\"accountStatus\":\"active\",\"userId\":2},{\"id\":2,\"balance\":null," +
-            "\"accountStatus\":\"active\",\"userId\":3},{\"id\":3,\"balance\":null," +
-            "\"accountStatus\":\"active\",\"userId\":3}]"));
+        .andExpect(content().string(
+            "[{\"id\":1,\"accountStatus\":\"active\",\"userId\":2}," +
+            "{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}," +
+            "{\"id\":3,\"accountStatus\":\"active\",\"userId\":3}]"));
   }
   
   @Test
@@ -59,7 +56,7 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "{\"id\":2,\"balance\":null,\"accountStatus\":\"active\",\"userId\":3}"));
+            "{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}"));
   }
   
   @Test
@@ -77,7 +74,7 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "{\"id\":4,\"balance\":null,\"accountStatus\":\"active\",\"userId\":3}"));
+            "{\"id\":4,\"accountStatus\":\"active\",\"userId\":3}"));
   }
   
   @Test
@@ -93,9 +90,9 @@ class AccountControllerTest {
     this.mockMvc.perform(get("/api/v1/accounts/all"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string("[{\"id\":2,\"balance\":null," +
-            "\"accountStatus\":\"active\",\"userId\":3}," +
-            "{\"id\":3,\"balance\":null,\"accountStatus\":\"active\",\"userId\":3}]"));
+        .andExpect(content().string(
+            "[{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}," +
+            "{\"id\":3,\"accountStatus\":\"active\",\"userId\":3}]"));
   }
   
   @Test
