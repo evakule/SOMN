@@ -1,6 +1,6 @@
 package com.somn.controller;
 
-import com.somn.controller.response.Message;
+import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
@@ -25,54 +25,51 @@ public final class CustomerController {
   private CustomerEntityService customerEntityService;
   
   @GetMapping
-  public ResponseEntity<?> getAllCustomers() {
+  public ResponseEntity<List<UserDTO>> getAllCustomers() {
     List<UserDTO> userDTOList = customerEntityService.getAllCustomers();
     if (CollectionUtils.isEmpty(userDTOList)) {
-      return new ResponseEntity<>(
-          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
   }
   
   @GetMapping(value = "{id}")
-  public ResponseEntity<?> getCustomer(
+  public ResponseEntity<UserDTO> getCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);
     if (userDTO == null) {
-      return new ResponseEntity<>(
-          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
   }
   
   @PostMapping
-  public ResponseEntity<?> createNewCustomer(
+  public ResponseEntity<String> createNewCustomer(
       final @RequestBody UserDTO userDTO
   ) {
     if (userDTO == null) {
-      return new ResponseEntity<>(
-          Message.CUSTOMER_CREATED, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
       customerEntityService.createCustomer(userDTO);
-      return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+      return new ResponseEntity<>(
+          ResponseMessage.customerCreated(), HttpStatus.CREATED);
     }
   }
   
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<?> deactivateCustomer(
+  public ResponseEntity<String> deactivateCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);
     if (userDTO == null) {
-      return new ResponseEntity<>(
-          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       customerEntityService.deleteCustomer(id);
       return new ResponseEntity<>(
-          Message.CUSTOMER_DELETED, HttpStatus.NO_CONTENT);
+          ResponseMessage.customerDeleted(), HttpStatus.NO_CONTENT);
     }
   }
 }
