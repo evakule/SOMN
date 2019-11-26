@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "api/v1/customers")
 public final class CustomerController {
-  
   @Autowired
   private CustomerEntityService customerEntityService;
   
@@ -47,19 +47,20 @@ public final class CustomerController {
   }
   
   @PostMapping
-  public ResponseEntity<UserDTO> createNewCustomer(
+  public ResponseEntity<?> createNewCustomer(
       final @RequestBody UserDTO userDTO
   ) {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
       customerEntityService.createCustomer(userDTO);
-      return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
+      return new ResponseEntity<>(
+          ResponseMessage.CUSTOMER_CREATED.getMessage(), HttpStatus.CREATED);
     }
   }
   
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<UserDTO> deactivateCustomer(
+  public ResponseEntity<?> deactivateCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);

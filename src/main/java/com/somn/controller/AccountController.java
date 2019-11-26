@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.exception.SomnLimitExceedException;
@@ -68,19 +69,22 @@ public class AccountController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
       } else {
         accountEntityService.createAccount(customerAccountDTO);
-        return new ResponseEntity<>(customerAccountDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            ResponseMessage.ACCOUNT_CREATED.getMessage(), HttpStatus.CREATED);
       }
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
   }
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<AccountantAccountDTO> deleteAccount(
+  public ResponseEntity<?> deleteAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountantAccountDTO accountantAccountDTO = accountEntityService.getById(id);
+    AccountantAccountDTO accountantAccountDTO =
+        accountEntityService.getById(id);
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
@@ -98,9 +102,11 @@ public class AccountController {
     try {
       accountEntityService.withdrawMoneyFromAccount(id, amount);
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(
+        ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
@@ -112,9 +118,11 @@ public class AccountController {
     try {
       accountEntityService.depositMoney(id, amount);
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(
+        ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
@@ -125,7 +133,8 @@ public class AccountController {
     if (CollectionUtils.isEmpty(customerAccountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(customerAccountDTOList, HttpStatus.OK);
+      return new ResponseEntity<>(
+          customerAccountDTOList, HttpStatus.OK);
     }
   }
   
