@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.Message;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
@@ -20,38 +21,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "api/v1/customers")
 public final class CustomerController {
-  
   @Autowired
   private CustomerEntityService customerEntityService;
   
   @GetMapping
-  public ResponseEntity<List<UserDTO>> getAllCustomers() {
+  public ResponseEntity<?> getAllCustomers() {
     List<UserDTO> userDTOList = customerEntityService.getAllCustomers();
     if (CollectionUtils.isEmpty(userDTOList)) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(userDTOList, HttpStatus.OK);
     }
   }
   
   @GetMapping(value = "{id}")
-  public ResponseEntity<UserDTO> getCustomer(
+  public ResponseEntity<?> getCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);
     if (userDTO == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
   }
   
   @PostMapping
-  public ResponseEntity<UserDTO> createNewCustomer(
+  public ResponseEntity<?> createNewCustomer(
       final @RequestBody UserDTO userDTO
   ) {
     if (userDTO == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          Message.CUSTOMER_CREATED, HttpStatus.BAD_REQUEST);
     } else {
       customerEntityService.createCustomer(userDTO);
       return new ResponseEntity<>(userDTO, HttpStatus.CREATED);
@@ -59,15 +62,17 @@ public final class CustomerController {
   }
   
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<UserDTO> deactivateCustomer(
+  public ResponseEntity<?> deactivateCustomer(
       final @PathVariable("id") Long id
   ) {
     UserDTO userDTO = customerEntityService.getById(id);
     if (userDTO == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.CUSTOMERS_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       customerEntityService.deleteCustomer(id);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      return new ResponseEntity<>(
+          Message.CUSTOMER_DELETED, HttpStatus.NO_CONTENT);
     }
   }
 }

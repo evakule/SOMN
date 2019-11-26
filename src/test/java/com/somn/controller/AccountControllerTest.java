@@ -13,12 +13,12 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,7 +35,8 @@ class AccountControllerTest {
   @Autowired
   private MockMvc mockMvc;
   
-  private CustomerAccountDTO accountEntity = new CustomerAccountDTO(4L, 1000, "active", 3L);
+  private CustomerAccountDTO accountEntity =
+      new CustomerAccountDTO(4L, 1000, "active", 3L);
   
   @Test
   @WithMockUser(roles = {"ACCOUNTANT"})
@@ -62,7 +63,7 @@ class AccountControllerTest {
   @Test
   @WithMockUser(roles = {"ACCOUNTANT"})
   void createAccount() throws Exception {
-    this.mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/accounts")
+    this.mockMvc.perform(post("/api/v1/accounts")
         .with(csrf())
         .content(new ObjectMapper().writeValueAsString(accountEntity))
         .contentType(MediaType.APPLICATION_JSON))

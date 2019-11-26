@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.Message;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.exception.SomnLimitExceedException;
@@ -34,11 +35,12 @@ public class AccountController {
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
-  public ResponseEntity<List<AccountantAccountDTO>> getAllAccounts() {
+  public ResponseEntity<?> getAllAccounts() {
     List<AccountantAccountDTO> accountantAccountDTOList =
         accountEntityService.getAllAccounts();
     if (CollectionUtils.isEmpty(accountantAccountDTOList)) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(accountantAccountDTOList, HttpStatus.OK);
     }
@@ -46,13 +48,14 @@ public class AccountController {
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "{id}")
-  public ResponseEntity<AccountantAccountDTO> getAccount(
+  public ResponseEntity<?> getAccount(
       final @PathVariable("id") Long id
   ) {
     AccountantAccountDTO accountantAccountDTO =
         accountEntityService.getById(id);
     if (accountantAccountDTO == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       return new ResponseEntity<>(accountantAccountDTO, HttpStatus.OK);
     }
@@ -65,27 +68,33 @@ public class AccountController {
   ) {
     try {
       if (customerAccountDTO == null) {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(
+            Message.INCORRECT_VALUES, HttpStatus.BAD_REQUEST);
       } else {
         accountEntityService.createAccount(customerAccountDTO);
-        return new ResponseEntity<>(customerAccountDTO, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            Message.ACCOUNT_CREATED, HttpStatus.CREATED);
       }
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
   }
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<AccountantAccountDTO> deleteAccount(
+  public ResponseEntity<?> deleteAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountantAccountDTO accountantAccountDTO = accountEntityService.getById(id);
+    AccountantAccountDTO accountantAccountDTO =
+        accountEntityService.getById(id);
     if (accountantAccountDTO == null) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
       accountEntityService.deleteAccount(id);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      return new ResponseEntity<>(
+          Message.ACCOUNT_DELETED, HttpStatus.NO_CONTENT);
     }
   }
   
@@ -98,9 +107,11 @@ public class AccountController {
     try {
       accountEntityService.withdrawMoneyFromAccount(id, amount);
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(
+        Message.ACCOUNT_TRANSACTION_SUCCESS, HttpStatus.OK);
   }
   
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
@@ -112,20 +123,24 @@ public class AccountController {
     try {
       accountEntityService.depositMoney(id, amount);
     } catch (SomnLimitExceedException e) {
-      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(
+        Message.ACCOUNT_TRANSACTION_SUCCESS, HttpStatus.OK);
   }
   
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @GetMapping
-  public ResponseEntity<List<CustomerAccountDTO>> checkBalanceByCustomer() {
+  public ResponseEntity<?> checkBalanceByCustomer() {
     List<CustomerAccountDTO> customerAccountDTOList = accountEntityService
         .getAllCustomerAccountsById(getUserIdFromSession());
     if (CollectionUtils.isEmpty(customerAccountDTOList)) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(
+          Message.ACCOUNT_NOT_FOUND, HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(customerAccountDTOList, HttpStatus.OK);
+      return new ResponseEntity<>(
+          customerAccountDTOList, HttpStatus.OK);
     }
   }
   
