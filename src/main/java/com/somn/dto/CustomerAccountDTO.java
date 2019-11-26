@@ -1,15 +1,20 @@
 package com.somn.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CustomerAccountDTO {
-  private Long id;
+public class CustomerAccountDTO extends AccountantAccountDTO {
   private Integer balance;
-  private String accountStatus;
-  private Long userId;
+  
+  public CustomerAccountDTO(
+      Long id,
+      Integer balance,
+      String accountStatus,
+      Long userId
+  ) {
+    super(id, accountStatus, userId);
+    this.balance = balance;
+  }
 }

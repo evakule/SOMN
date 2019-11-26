@@ -13,28 +13,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerEntityServiceImpl implements CustomerEntityService {
-  @Autowired
-  private UserEntityRepository userEntityRepository;
-  
-  @Autowired
-  private RoleEntityRepository roleEntityRepository;
-  
-  @Autowired
-  private UserMapper userMapper;
-  
-  @Autowired
-  private RoleMapper roleMapper;
-  
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+  private final UserEntityRepository userEntityRepository;
+  private final RoleEntityRepository roleEntityRepository;
+  private final UserMapper userMapper;
+  private final RoleMapper roleMapper;
   
   @Override
   public List<UserDTO> getAllCustomers() {

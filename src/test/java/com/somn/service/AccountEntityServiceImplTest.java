@@ -25,12 +25,12 @@ public class AccountEntityServiceImplTest {
   
   private AccountEntity accountEntity;
   
-  private CustomerAccountDTO negativeCustomerAccountDTO =
+  private CustomerAccountDTO incorrectCustomerAccountDTO =
       new CustomerAccountDTO(
           4L, 1000001, "active", 2L
       );
   
-  private CustomerAccountDTO positiveCustomerAccountDTO =
+  private CustomerAccountDTO correctCustomerAccountDTO =
       new CustomerAccountDTO(
           4L, 50050, "active", 2L
       );
@@ -74,7 +74,7 @@ public class AccountEntityServiceImplTest {
   public void createAccountNegativeScenario() throws SomnLimitExceedException {
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     Mockito.when(mockRepository.getOne(4L)).thenReturn(accountEntity);
-    accountEntityService.createAccount(negativeCustomerAccountDTO);
+    accountEntityService.createAccount(incorrectCustomerAccountDTO);
     Assertions.assertEquals(accountEntity, mockRepository.getOne(4L));
   }
   
@@ -82,7 +82,7 @@ public class AccountEntityServiceImplTest {
   public void createAccountPositiveScenario() throws SomnLimitExceedException {
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     Mockito.when(mockRepository.getOne(4L)).thenReturn(accountEntity);
-    accountEntityService.createAccount(positiveCustomerAccountDTO);
+    accountEntityService.createAccount(correctCustomerAccountDTO);
     Assertions.assertEquals(accountEntity, mockRepository.getOne(4L));
   }
 }
