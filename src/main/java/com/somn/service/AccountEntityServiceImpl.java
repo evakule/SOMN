@@ -1,8 +1,10 @@
 package com.somn.service;
 
-import com.somn.dto.AccountDTO;
+import com.somn.dto.AccountantAccountDTO;
+import com.somn.dto.CustomerAccountDTO;
 import com.somn.exception.SomnLimitExceedException;
-import com.somn.mappers.AccountMapper;
+import com.somn.mappers.AccountantAccountMapper;
+import com.somn.mappers.CustomerAccountMapper;
 import com.somn.model.AccountEntity;
 import com.somn.repository.AccountEntityRepository;
 
@@ -29,43 +31,37 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private AccountEntityRepository accountEntityRepository;
   
   @Autowired
-  private AccountMapper accountMapper;
+  private AccountantAccountMapper accountantAccountMapper;
+  
+  @Autowired
+  private CustomerAccountMapper customerAccountMapper;
   
   @Override
-  public List<AccountDTO> getAllAccounts() {
+  public List<AccountantAccountDTO> getAllAccounts() {
     List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
-    return accountMapper.toDtoList(accountEntityList);
+    return accountantAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
-  public List<AccountDTO> getAllAccountsWithoutBalance() {
-    List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
-    return accountMapper.toDtoListWithoutBalance(accountEntityList);
-  }
-  
-  @Override
-  public AccountDTO getById(final Long id) {
+  public AccountantAccountDTO getById(final Long id) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
-    return accountMapper.toDTO(accountEntity);
-  }
-  
-  public AccountDTO getAccountByIdWithoutBalance(final Long id) {
-    AccountEntity accountEntity = accountEntityRepository.getOne(id);
-    AccountDTO accountDTO = accountMapper.toDTO(accountEntity);
-    accountDTO.setBalance(null);
-    return accountDTO;
+    return accountantAccountMapper.toDTO(accountEntity);
   }
   
   @Override
-  public void createAccount(final AccountDTO accountDTO) {
-    AccountEntity accountEntity = accountMapper.toEntity(accountDTO);
+  public void createAccount(final CustomerAccountDTO customerAccountDTO)
+      throws SomnLimitExceedException {
+    if (customerAccountDTO.getBalance() > balanceLimit) {
+      throw new SomnLimitExceedException(balanceStoreLimitException);
+    }
+    AccountEntity accountEntity = customerAccountMapper.toEntity(customerAccountDTO);
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public List<AccountDTO> getAllCustomerAccountsById(Long id) {
+  public List<CustomerAccountDTO> getAllCustomerAccountsById(Long id) {
     List<AccountEntity> accountEntityList = accountEntityRepository.getAllByUserEntityId(id);
-    return accountMapper.toDtoList(accountEntityList);
+    return customerAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override

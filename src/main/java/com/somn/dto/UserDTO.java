@@ -1,6 +1,5 @@
 package com.somn.dto;
 
-import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -16,5 +15,4 @@ public class UserDTO {
   private String encryptedPassword;
   private String userStatus;
   private Set<RoleDTO> roles;
-  private List<AccountDTO> accounts;
 }

@@ -1,25 +1,23 @@
 package com.somn.service;
 
-import com.somn.dto.AccountDTO;
+import com.somn.dto.AccountantAccountDTO;
+import com.somn.dto.CustomerAccountDTO;
 
 import com.somn.exception.SomnLimitExceedException;
 
 import java.util.List;
 
 public interface AccountEntityService {
-  List<AccountDTO> getAllAccounts();
+  List<AccountantAccountDTO> getAllAccounts();
   
-  List<AccountDTO> getAllAccountsWithoutBalance();
+  AccountantAccountDTO getById(Long id);
   
-  AccountDTO getById(Long id);
-  
-  AccountDTO getAccountByIdWithoutBalance(final Long id);
-  
-  void createAccount(AccountDTO accountDTO);
+  void createAccount(CustomerAccountDTO customerAccountDTO)
+      throws SomnLimitExceedException;
   
   void deleteAccount(Long id);
   
-  List<AccountDTO> getAllCustomerAccountsById(Long id);
+  List<CustomerAccountDTO> getAllCustomerAccountsById(Long id);
   
   void withdrawMoneyFromAccount(final Long id, final Integer amount)
       throws SomnLimitExceedException;

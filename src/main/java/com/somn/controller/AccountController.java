@@ -1,6 +1,7 @@
 package com.somn.controller;
 
-import com.somn.dto.AccountDTO;
+import com.somn.dto.AccountantAccountDTO;
+import com.somn.dto.CustomerAccountDTO;
 import com.somn.exception.SomnLimitExceedException;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
@@ -33,48 +34,54 @@ public class AccountController {
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
-  public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-    List<AccountDTO> accountDTOList = accountEntityService.getAllAccountsWithoutBalance();
-    if (CollectionUtils.isEmpty(accountDTOList)) {
+  public ResponseEntity<List<AccountantAccountDTO>> getAllAccounts() {
+    List<AccountantAccountDTO> accountantAccountDTOList =
+        accountEntityService.getAllAccounts();
+    if (CollectionUtils.isEmpty(accountantAccountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
+      return new ResponseEntity<>(accountantAccountDTOList, HttpStatus.OK);
     }
   }
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "{id}")
-  public ResponseEntity<AccountDTO> getAccount(
+  public ResponseEntity<AccountantAccountDTO> getAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountDTO accountDTO = accountEntityService.getAccountByIdWithoutBalance(id);
-    if (accountDTO == null) {
+    AccountantAccountDTO accountantAccountDTO =
+        accountEntityService.getById(id);
+    if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(accountDTO, HttpStatus.OK);
+      return new ResponseEntity<>(accountantAccountDTO, HttpStatus.OK);
     }
   }
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
-  public ResponseEntity<AccountDTO> createAccount(
-      final @RequestBody AccountDTO accountDTO
+  public ResponseEntity<?> createAccount(
+      final @RequestBody CustomerAccountDTO customerAccountDTO
   ) {
-    if (accountDTO == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      accountEntityService.createAccount(accountDTO);
-      return new ResponseEntity<>(accountDTO, HttpStatus.CREATED);
+    try {
+      if (customerAccountDTO == null) {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      } else {
+        accountEntityService.createAccount(customerAccountDTO);
+        return new ResponseEntity<>(customerAccountDTO, HttpStatus.CREATED);
+      }
+    } catch (SomnLimitExceedException e) {
+      return new ResponseEntity<>(e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
   }
   
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
-  public ResponseEntity<AccountDTO> deleteAccount(
+  public ResponseEntity<AccountantAccountDTO> deleteAccount(
       final @PathVariable("id") Long id
   ) {
-    AccountDTO accountDTO = accountEntityService.getById(id);
-    if (accountDTO == null) {
+    AccountantAccountDTO accountantAccountDTO = accountEntityService.getById(id);
+    if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
       accountEntityService.deleteAccount(id);
@@ -112,13 +119,13 @@ public class AccountController {
   
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @GetMapping
-  public ResponseEntity<List<AccountDTO>> checkBalanceByCustomer() {
-    List<AccountDTO> accountDTOList = accountEntityService
+  public ResponseEntity<List<CustomerAccountDTO>> checkBalanceByCustomer() {
+    List<CustomerAccountDTO> customerAccountDTOList = accountEntityService
         .getAllCustomerAccountsById(getUserIdFromSession());
-    if (CollectionUtils.isEmpty(accountDTOList)) {
+    if (CollectionUtils.isEmpty(customerAccountDTOList)) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      return new ResponseEntity<>(accountDTOList, HttpStatus.OK);
+      return new ResponseEntity<>(customerAccountDTOList, HttpStatus.OK);
     }
   }
   
