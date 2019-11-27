@@ -7,12 +7,18 @@ import com.somn.exception.SomnLimitExceedException;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import java.util.List;
 
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -29,10 +35,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "api/v1/accounts")
+@Api(value = "Set of endpoints for Creating, Retrieving, "
+    + "Updating and Deleting of Accounts",
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
+  private static final int OK = 200;
+  private static final int NOT_FOUND = 404;
+  private static final int BAD_REQUEST = 400;
+  private static final int CREATED = 201;
+  private static final int NO_CONTENT = 204;
+  
   @Autowired
   private AccountEntityService accountEntityService;
   
+  @ApiOperation("Shows all customers accounts except their balance")
+  @ApiResponses(value = {
+      @ApiResponse(code = OK, message = "OK"),
+      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+  })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
   public ResponseEntity<List<AccountantAccountDTO>> getAllAccounts() {
@@ -45,6 +65,11 @@ public class AccountController {
     }
   }
   
+  @ApiOperation("Showss single customers account except balance")
+  @ApiResponses(value = {
+      @ApiResponse(code = OK, message = "OK"),
+      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+  })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "{id}")
   public ResponseEntity<AccountantAccountDTO> getAccount(
@@ -59,6 +84,11 @@ public class AccountController {
     }
   }
   
+  @ApiOperation("Creates an account")
+  @ApiResponses(value = {
+      @ApiResponse(code = CREATED, message = "Created"),
+      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+  })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
   public ResponseEntity<?> createAccount(
@@ -78,6 +108,11 @@ public class AccountController {
     }
   }
   
+  @ApiOperation("Remove an account")
+  @ApiResponses(value = {
+      @ApiResponse(code = NO_CONTENT, message = "No Content"),
+      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+  })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
   public ResponseEntity<?> deleteAccount(
@@ -93,6 +128,11 @@ public class AccountController {
     }
   }
   
+  @ApiOperation("Withdraw money from account")
+  @ApiResponses(value = {
+      @ApiResponse(code = OK, message = "OK"),
+      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+  })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/withdraw", params = {"amount"})
   public ResponseEntity<?> withdrawMoney(
@@ -109,6 +149,11 @@ public class AccountController {
         ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
+  @ApiOperation("Deposit money on account")
+  @ApiResponses(value = {
+      @ApiResponse(code = OK, message = "OK"),
+      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+  })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/deposit", params = {"amount"})
   public ResponseEntity<?> depositMoney(
@@ -125,6 +170,11 @@ public class AccountController {
         ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
+  @ApiOperation("Shows all accounts of the customer")
+  @ApiResponses(value = {
+      @ApiResponse(code = OK, message = "OK"),
+      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+  })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @GetMapping
   public ResponseEntity<List<CustomerAccountDTO>> checkBalanceByCustomer() {
