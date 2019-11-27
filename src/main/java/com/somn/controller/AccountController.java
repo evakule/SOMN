@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.ResponseCode;
 import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
@@ -39,19 +40,16 @@ import org.springframework.web.bind.annotation.RestController;
     + "Updating and Deleting of Accounts",
     produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController {
-  private static final int OK = 200;
-  private static final int NOT_FOUND = 404;
-  private static final int BAD_REQUEST = 400;
-  private static final int CREATED = 201;
-  private static final int NO_CONTENT = 204;
   
   @Autowired
   private AccountEntityService accountEntityService;
   
-  @ApiOperation("Shows all customers accounts except their balance")
+  @ApiOperation("Display all accounts in the system. Used only by accountant.")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "All accounts selected successfully."),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no accounts associated with any user.")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
@@ -65,10 +63,13 @@ public class AccountController {
     }
   }
   
-  @ApiOperation("Showss single customers account except balance")
+  @ApiOperation("Display single customer account except balance. "
+      + "Used only by accountant")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Account selected successfully."),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no account associated with this id.")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "{id}")
@@ -84,10 +85,13 @@ public class AccountController {
     }
   }
   
-  @ApiOperation("Creates an account")
+  @ApiOperation("Creates single account. Used by accountant.")
   @ApiResponses(value = {
-      @ApiResponse(code = CREATED, message = "Created"),
-      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+      @ApiResponse(code = ResponseCode.CREATED, message =
+          "Account created successfully"),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Couldn't create an account."
+              + " Wrong values or balance more than 1000000")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
@@ -108,10 +112,12 @@ public class AccountController {
     }
   }
   
-  @ApiOperation("Remove an account")
+  @ApiOperation("Remove an account. Used by accountant.")
   @ApiResponses(value = {
-      @ApiResponse(code = NO_CONTENT, message = "No Content"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.NO_CONTENT, message =
+          "Account removed successfully"),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no account associated with this id.")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @DeleteMapping(value = "{id}")
@@ -128,10 +134,14 @@ public class AccountController {
     }
   }
   
-  @ApiOperation("Withdraw money from account")
+  @ApiOperation("Withdraw money from account. Used by customer.")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Transaction successful"),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Couldn't make transaction. Make sure that operation value "
+              + "more than 10$, amount of money you want to withdraw, "
+              + "more than your balance sum")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/withdraw", params = {"amount"})
@@ -149,10 +159,15 @@ public class AccountController {
         ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
-  @ApiOperation("Deposit money on account")
+  @ApiOperation("Deposit money on account. Used by customer.")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Transaction successful"),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Couldn't make transaction. Make sure that operation value "
+              + "more than 10$, account balance and deposit amount that "
+              + "you want to put into the account in total "
+              + "not exceeding 1,000,000")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/deposit", params = {"amount"})
@@ -170,10 +185,12 @@ public class AccountController {
         ResponseMessage.TRANSACTION_SUCCESS.getMessage(), HttpStatus.OK);
   }
   
-  @ApiOperation("Shows all accounts of the customer")
+  @ApiOperation("Shows all accounts of the customer. Used by customer.")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "All accounts selected successfully."),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no accounts associated with you")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @GetMapping

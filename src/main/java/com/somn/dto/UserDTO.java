@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 @ApiModel(
     value = "User",
-    description = "Class that represents a user")
+    description = "Represents a user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

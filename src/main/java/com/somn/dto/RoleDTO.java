@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @ApiModel(
     value = "Role",
-    description = "Class that represents an a role "
+    description = "Represents an a role "
         + "which give some authorities to a user")
 @Data
 @AllArgsConstructor

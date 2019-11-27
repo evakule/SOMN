@@ -6,8 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @ApiModel(
-    value = "Account",
-    description = "Class that represents an account")
+    value = "Account", description = "Represents an account")
 @Data
 @NoArgsConstructor
 public class CustomerAccountDTO extends AccountantAccountDTO {

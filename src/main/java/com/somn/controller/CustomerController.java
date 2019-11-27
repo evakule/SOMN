@@ -1,5 +1,6 @@
 package com.somn.controller;
 
+import com.somn.controller.response.ResponseCode;
 import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
@@ -30,19 +31,17 @@ import org.springframework.web.bind.annotation.RestController;
     + "and Deleting of Customers",
     produces = MediaType.APPLICATION_JSON_VALUE)
 public final class CustomerController {
-  private static final int OK = 200;
-  private static final int NOT_FOUND = 404;
-  private static final int BAD_REQUEST = 400;
-  private static final int CREATED = 201;
-  private static final int NO_CONTENT = 204;
   
   @Autowired
   private CustomerEntityService customerEntityService;
   
-  @ApiOperation("Shows all customers")
+  @ApiOperation("Display all customers in the system except their balances. "
+      + "Used only by admin.")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "All customers selected successfully."),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no customers in system. Try to add some customer")
   })
   @GetMapping
   public ResponseEntity<List<UserDTO>> getAllCustomers() {
@@ -54,10 +53,13 @@ public final class CustomerController {
     }
   }
   
-  @ApiOperation("Shows single customer")
+  @ApiOperation("Display single customer except his balance. "
+      + "Used only by admin")
   @ApiResponses(value = {
-      @ApiResponse(code = OK, message = "OK"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Customer selected successfully"),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no customer associated with this id.")
   })
   @GetMapping(value = "{id}")
   public ResponseEntity<UserDTO> getCustomer(
@@ -71,10 +73,12 @@ public final class CustomerController {
     }
   }
   
-  @ApiOperation("Creates new customer")
+  @ApiOperation("Creates single customer. Used by admin.")
   @ApiResponses(value = {
-      @ApiResponse(code = CREATED, message = "Created"),
-      @ApiResponse(code = BAD_REQUEST, message = "Bad Request")
+      @ApiResponse(code = ResponseCode.CREATED, message =
+          "Customer created successfully"),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Couldn't create customer. Wrong values.")
   })
   @PostMapping
   public ResponseEntity<?> createNewCustomer(
@@ -89,10 +93,12 @@ public final class CustomerController {
     }
   }
   
-  @ApiOperation("Deactivates customer")
+  @ApiOperation("Remove a customer. Used by admin.")
   @ApiResponses(value = {
-      @ApiResponse(code = NO_CONTENT, message = "No Content"),
-      @ApiResponse(code = NOT_FOUND, message = "Not Found")
+      @ApiResponse(code = ResponseCode.NO_CONTENT, message =
+          "Customer removed successfully"),
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no customer associated with this id.")
   })
   @DeleteMapping(value = "{id}")
   public ResponseEntity<?> deactivateCustomer(
