@@ -49,12 +49,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void createAccount(final CustomerAccountDTO customerAccountDTO)
-      throws SomnLimitExceedException {
-    if (customerAccountDTO.getBalance() > balanceLimit) {
-      throw new SomnLimitExceedException(balanceStoreLimitException);
-    }
-    AccountEntity accountEntity = customerAccountMapper.toEntity(customerAccountDTO);
+  public void createAccount(final AccountantAccountDTO accountantAccountDTO) {
+    AccountEntity accountEntity = accountantAccountMapper.toEntity(accountantAccountDTO);
+    accountEntity.setBalance(0);
     accountEntityRepository.save(accountEntity);
   }
   

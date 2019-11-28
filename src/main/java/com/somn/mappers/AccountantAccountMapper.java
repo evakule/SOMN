@@ -13,5 +13,8 @@ public interface AccountantAccountMapper {
   @Mapping(source = "userEntity.id", target = "userId")
   AccountantAccountDTO toDTO(AccountEntity accountEntity);
   
+  @Mapping(source = "userId", target = "userEntity.id")
+  AccountEntity toEntity(AccountantAccountDTO accountantAccountDTO);
+  
   List<AccountantAccountDTO> toDtoList(List<AccountEntity> accountEntityList);
 }

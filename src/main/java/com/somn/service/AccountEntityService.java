@@ -12,8 +12,7 @@ public interface AccountEntityService {
   
   AccountantAccountDTO getById(Long id);
   
-  void createAccount(CustomerAccountDTO customerAccountDTO)
-      throws SomnLimitExceedException;
+  void createAccount(AccountantAccountDTO accountantAccountDTO);
   
   void deleteAccount(Long id);
   
