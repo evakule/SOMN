@@ -167,7 +167,7 @@ public class AccountController {
           "Couldn't make transaction. Make sure that transaction value "
               + "more than minimum operation value, account balance and "
               + "deposit amount that you want to put into the account "
-              + "in total not exceeding 1,000,000")
+              + "in total not exceeding balance store limit")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/deposit", params = {"amount"})
