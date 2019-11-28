@@ -41,7 +41,7 @@ public final class CustomerController {
       @ApiResponse(code = ResponseCode.OK, message =
           "All customers selected successfully."),
       @ApiResponse(code = ResponseCode.NOT_FOUND, message =
-          "There is no customers in system. Try to add some customer")
+          "There are no customers in system. Try to add some customer")
   })
   @GetMapping
   public ResponseEntity<List<UserDTO>> getAllCustomers() {

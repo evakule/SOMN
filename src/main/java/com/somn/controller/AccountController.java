@@ -49,7 +49,7 @@ public class AccountController {
       @ApiResponse(code = ResponseCode.OK, message =
           "All accounts selected successfully."),
       @ApiResponse(code = ResponseCode.NOT_FOUND, message =
-          "There is no accounts associated with any user.")
+          "There are no accounts associated with any user.")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @GetMapping(value = "/all")
@@ -139,9 +139,9 @@ public class AccountController {
       @ApiResponse(code = ResponseCode.OK, message =
           "Transaction successful"),
       @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
-          "Couldn't make transaction. Make sure that operation value "
-              + "more than 10$, amount of money you want to withdraw, "
-              + "more than your balance sum")
+          "Couldn't make transaction. Make sure that transaction value "
+              + "more than minimum operation value and amount of money "
+              + "you want to withdraw more than your balance sum")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/withdraw", params = {"amount"})
@@ -164,10 +164,10 @@ public class AccountController {
       @ApiResponse(code = ResponseCode.OK, message =
           "Transaction successful"),
       @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
-          "Couldn't make transaction. Make sure that operation value "
-              + "more than 10$, account balance and deposit amount that "
-              + "you want to put into the account in total "
-              + "not exceeding 1,000,000")
+          "Couldn't make transaction. Make sure that transaction value "
+              + "more than minimum operation value, account balance and "
+              + "deposit amount that you want to put into the account "
+              + "in total not exceeding 1,000,000")
   })
   @PreAuthorize("hasRole('ROLE_CUSTOMER')")
   @PutMapping(value = "{id}/deposit", params = {"amount"})
