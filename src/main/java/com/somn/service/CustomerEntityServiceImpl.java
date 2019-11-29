@@ -8,12 +8,15 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
+import com.somn.service.exception.SomnUserDeletingException;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,11 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private final RoleEntityRepository roleEntityRepository;
   private final UserMapper userMapper;
   private final RoleMapper roleMapper;
+  private static final String ROLE_ADMIN = "ROLE_ADMIN";
+  private static final Long ROLE_CUSTOMER_ID = 3L;
+  
+  @Value("${somn.user.admin-deleting-exception}")
+  private String adminDeletingException;
   
   @Override
   public List<UserDTO> getAllCustomers() {
@@ -48,7 +56,13 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   @Override
-  public void deleteCustomer(Long id) {
+  public void deactivateCustomer(Long id)
+      throws SomnUserDeletingException {
+    UserEntity userEntity = userEntityRepository.getOne(id);
+    List<String> roles = getAllRolesFromSet(userEntity.getRoles());
+    if (roles.contains(ROLE_ADMIN)) {
+      throw new SomnUserDeletingException(adminDeletingException);
+    }
     userEntityRepository.deleteById(id);
   }
   
@@ -63,7 +77,15 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   private RoleDTO getCustomerRoleDTOFromRepo() {
-    RoleEntity roleEntity = roleEntityRepository.getOne(3L);
+    RoleEntity roleEntity = roleEntityRepository.getOne(ROLE_CUSTOMER_ID);
     return roleMapper.toDTO(roleEntity);
+  }
+  
+  private List<String> getAllRolesFromSet(Set<RoleEntity> roleEntitySet) {
+    List<String> list = new ArrayList<>();
+    for (RoleEntity role : roleEntitySet) {
+      list.add(role.getRoleName());
+    }
+    return list;
   }
 }

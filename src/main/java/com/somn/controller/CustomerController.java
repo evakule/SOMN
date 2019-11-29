@@ -5,6 +5,7 @@ import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
+import com.somn.service.exception.SomnUserDeletingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -110,8 +111,13 @@ public final class CustomerController {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      customerEntityService.deleteCustomer(id);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+      try {
+        customerEntityService.deactivateCustomer(id);
+      } catch (SomnUserDeletingException e) {
+        return new ResponseEntity<>(
+            e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      }
     }
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }
