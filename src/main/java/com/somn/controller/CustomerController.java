@@ -110,7 +110,7 @@ public final class CustomerController {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      customerEntityService.deleteCustomer(id);
+      customerEntityService.deactivateCustomer(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
   }

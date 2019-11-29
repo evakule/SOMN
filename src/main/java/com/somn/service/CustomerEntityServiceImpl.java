@@ -4,6 +4,7 @@ import com.somn.dto.RoleDTO;
 import com.somn.dto.UserDTO;
 import com.somn.mappers.RoleMapper;
 import com.somn.mappers.UserMapper;
+import com.somn.model.AccountEntity;
 import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
@@ -48,8 +49,10 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   @Override
-  public void deleteCustomer(Long id) {
-    userEntityRepository.deleteById(id);
+  public void deactivateCustomer(Long id) {
+    UserEntity userEntity = userEntityRepository.getOne(id);
+    userEntity.setUserStatus("inactive");
+    userEntityRepository.save(userEntity);
   }
   
   @Override

@@ -12,5 +12,5 @@ public interface CustomerEntityService extends UserDetailsService {
   
   UserDTO getById(Long id);
   
-  void deleteCustomer(Long id);
+  void deactivateCustomer(Long id);
 }
