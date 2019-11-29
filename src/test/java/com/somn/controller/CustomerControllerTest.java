@@ -112,6 +112,6 @@ class CustomerControllerTest {
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
                 +
                 "{\"id\":3,\"firstName\":\"Vasya\",\"encryptedPassword\":\"Antonov\"," +
-                "\"userStatus\":\"inactive\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
+                "\"userStatus\":\"deactivated\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
   }
 }

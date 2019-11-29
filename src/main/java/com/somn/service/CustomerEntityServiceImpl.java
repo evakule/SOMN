@@ -51,7 +51,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public void deactivateCustomer(Long id) {
     UserEntity userEntity = userEntityRepository.getOne(id);
-    userEntity.setUserStatus("inactive");
+    userEntity.setUserStatus("deactivated");
     userEntityRepository.save(userEntity);
   }
   
