@@ -90,25 +90,19 @@ public class AccountController {
       @ApiResponse(code = ResponseCode.CREATED, message =
           "Account created successfully"),
       @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
-          "Couldn't create an account."
-              + " Wrong values or balance more than 1000000")
+          "Couldn't create an account. Wrong values.")
   })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
   public ResponseEntity<?> createAccount(
-      final @RequestBody CustomerAccountDTO customerAccountDTO
+      final @RequestBody AccountantAccountDTO accountantAccountDTO
   ) {
-    try {
-      if (customerAccountDTO == null) {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      } else {
-        accountEntityService.createAccount(customerAccountDTO);
-        return new ResponseEntity<>(
-            ResponseMessage.ACCOUNT_CREATED.getMessage(), HttpStatus.CREATED);
-      }
-    } catch (SomnLimitExceedException e) {
+    if (accountantAccountDTO == null) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    } else {
+      accountEntityService.createAccount(accountantAccountDTO);
       return new ResponseEntity<>(
-          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+          ResponseMessage.ACCOUNT_CREATED.getMessage(), HttpStatus.CREATED);
     }
   }
   
