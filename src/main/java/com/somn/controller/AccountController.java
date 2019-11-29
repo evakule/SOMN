@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiResponses;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,7 @@ public class AccountController {
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PostMapping
   public ResponseEntity<?> createAccount(
-      final @RequestBody AccountantAccountDTO accountantAccountDTO
+      final @Valid @RequestBody AccountantAccountDTO accountantAccountDTO
   ) {
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

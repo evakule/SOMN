@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @ApiModel(
     value = "User",
     description = "Represents a user")
@@ -27,18 +29,21 @@ public class UserDTO {
       notes = "First name of the user.",
       example = "Olga",
       position = 1)
+  @NotNull
   private String firstName;
   
   @ApiModelProperty(
       notes = "Encrypted password of the user.",
       example = "^*&^&*^*(",
       position = 2)
+  @NotNull
   private String encryptedPassword;
   
   @ApiModelProperty(
       notes = "User status.",
       example = "inactive",
       position = 3)
+  @NotNull
   private String userStatus;
   
   @ApiModelProperty(
