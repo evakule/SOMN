@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping(value = "api/v1/customers")
 @Api(value = "Set of endpoints for Creating, Retrieving "
@@ -82,7 +84,7 @@ public final class CustomerController {
   })
   @PostMapping
   public ResponseEntity<?> createNewCustomer(
-      final @RequestBody UserDTO userDTO
+      final @Valid @RequestBody UserDTO userDTO
   ) {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
