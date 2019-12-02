@@ -47,6 +47,14 @@ class CustomerControllerTest {
       new ArrayList<>()
   );
   
+  private UserEntity existingUserEntity = new UserEntity(
+      "Egor",
+      "$2a$04$0FyGGlHgZ9kxQovOVQtkpeYExkR2tCb6R1aXws79zV2kWnqGl3h32",
+      "active",
+      new HashSet<>(),
+      new ArrayList<>()
+  );
+  
   @Test
   void getAllCustomers() throws Exception {
     this.mockMvc.perform(get("/api/v1/customers"))
@@ -110,5 +118,15 @@ class CustomerControllerTest {
                 +
                 "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
                 "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
+  }
+  
+  @Test
+  void createCustomerWithExistedFirstUserName() throws Exception {
+    this.mockMvc.perform(post("/api/v1/customers")
+        .with(csrf())
+        .content(new ObjectMapper().writeValueAsString(existingUserEntity))
+        .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isBadRequest());
   }
 }

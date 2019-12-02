@@ -5,6 +5,7 @@ import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
+import com.somn.service.exception.SomnUserCreatingException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -89,7 +90,12 @@ public final class CustomerController {
     if (userDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     } else {
-      customerEntityService.createCustomer(userDTO);
+      try {
+        customerEntityService.createCustomer(userDTO);
+      } catch (SomnUserCreatingException e) {
+        return new ResponseEntity<>(
+            e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      }
       return new ResponseEntity<>(
           ResponseMessage.CUSTOMER_CREATED.getMessage(), HttpStatus.CREATED);
     }
