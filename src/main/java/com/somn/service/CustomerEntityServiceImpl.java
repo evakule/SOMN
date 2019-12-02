@@ -59,8 +59,11 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   public void deactivateCustomer(Long id)
       throws SomnUserDeletingException {
     UserEntity userEntity = userEntityRepository.getOne(id);
-    List<String> roles = getAllRolesFromSet(userEntity.getRoles());
-    if (roles.contains(ROLE_ADMIN)) {
+    boolean isContainsAdminRole = userEntity.getRoles().stream()
+        .anyMatch(roleEntity -> roleEntity
+            .getRoleName()
+            .contains(ROLE_ADMIN));
+    if (isContainsAdminRole) {
       throw new SomnUserDeletingException(adminDeletingException);
     }
     userEntityRepository.deleteById(id);
@@ -79,13 +82,5 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private RoleDTO getCustomerRoleDTOFromRepo() {
     RoleEntity roleEntity = roleEntityRepository.getOne(ROLE_CUSTOMER_ID);
     return roleMapper.toDTO(roleEntity);
-  }
-  
-  private List<String> getAllRolesFromSet(Set<RoleEntity> roleEntitySet) {
-    List<String> list = new ArrayList<>();
-    for (RoleEntity role : roleEntitySet) {
-      list.add(role.getRoleName());
-    }
-    return list;
   }
 }
