@@ -2,11 +2,11 @@ package com.somn.service;
 
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
-import com.somn.exception.SomnLimitExceedException;
 import com.somn.mappers.AccountantAccountMapper;
 import com.somn.mappers.CustomerAccountMapper;
 import com.somn.model.AccountEntity;
 import com.somn.repository.AccountEntityRepository;
+import com.somn.service.exception.SomnLimitExceedException;
 
 import java.util.List;
 

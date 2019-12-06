@@ -113,11 +113,14 @@ class CustomerControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":" +
-                "\"Vakulenko\",\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
+            "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":\"Vakulenko\"," +
+                "\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
                 +
                 "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
+                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
+                +
+                "{\"id\":3,\"firstName\":\"Vasya\",\"encryptedPassword\":\"Antonov\"," +
+                "\"userStatus\":\"deactivated\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
   }
   
   @Test

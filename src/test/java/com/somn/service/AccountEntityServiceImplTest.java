@@ -1,7 +1,7 @@
 package com.somn.service;
 
 import com.somn.model.AccountEntity;
-import com.somn.exception.SomnLimitExceedException;
+import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
 import org.junit.Before;
 import org.junit.Test;

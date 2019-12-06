@@ -8,6 +8,7 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
+import com.somn.service.exception.UnableDeleteAdminException;
 import com.somn.service.exception.UserAlreadyExistException;
 
 import java.util.HashSet;
@@ -27,6 +28,11 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private final RoleEntityRepository roleEntityRepository;
   private final UserMapper userMapper;
   private final RoleMapper roleMapper;
+  private static final String ROLE_ADMIN = "ROLE_ADMIN";
+  private static final Long ROLE_CUSTOMER_ID = 3L;
+  
+  @Value("${somn.user.unable-delete-admin-exception}")
+  private String unableDeleteAdminMessage;
   
   @Value("${somn.user.already-exist-exception}")
   private String userAlreadyExistMessage;
@@ -58,8 +64,18 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   @Override
-  public void deleteCustomer(Long id) {
-    userEntityRepository.deleteById(id);
+  public void deactivateCustomer(Long id)
+      throws UnableDeleteAdminException {
+    UserEntity userEntity = userEntityRepository.getOne(id);
+    boolean isContainsAdminRole = userEntity.getRoles().stream()
+        .anyMatch(roleEntity -> roleEntity
+            .getRoleName()
+            .contains(ROLE_ADMIN));
+    if (isContainsAdminRole) {
+      throw new UnableDeleteAdminException(unableDeleteAdminMessage);
+    }
+    userEntity.setUserStatus("deactivated");
+    userEntityRepository.save(userEntity);
   }
   
   @Override

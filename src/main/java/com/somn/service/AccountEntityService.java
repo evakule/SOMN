@@ -3,7 +3,7 @@ package com.somn.service;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 
-import com.somn.exception.SomnLimitExceedException;
+import com.somn.service.exception.SomnLimitExceedException;
 
 import java.util.List;
 
