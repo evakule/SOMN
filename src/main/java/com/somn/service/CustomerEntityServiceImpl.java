@@ -31,10 +31,10 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private static final String ROLE_ADMIN = "ROLE_ADMIN";
   private static final Long ROLE_CUSTOMER_ID = 3L;
   
-  @Value("${somn.user.unable-delete-admin-exception}")
+  @Value("${somn.user.unable-delete-admin-message}")
   private String unableDeleteAdminMessage;
   
-  @Value("${somn.user.already-exist-exception}")
+  @Value("${somn.user.already-exist-message}")
   private String userAlreadyExistMessage;
   
   @Override

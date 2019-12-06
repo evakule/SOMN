@@ -28,7 +28,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private String balanceWithdrawExceptionMessage;
   @Value("${somn.balance.store-limit-exception-message}")
   private String balanceStoreLimitMessage;
-  @Value("${somn.user.no-such-user-exception}")
+  @Value("${somn.user.no-such-user-message}")
   private String noSuchUserMessage;
   
   @Autowired
