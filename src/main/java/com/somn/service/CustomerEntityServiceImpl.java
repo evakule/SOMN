@@ -43,9 +43,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
     UserEntity userFromDb =
         userEntityRepository.findByFirstName(userDTO.getFirstName());
     if (userFromDb == null) {
-      Set<RoleDTO> roleDTOSet = new HashSet<>();
-      roleDTOSet.add(getCustomerRoleDTOFromRepo());
-      userDTO.setRoles(roleDTOSet);
+      userDTO.setRoles(getCustomerRoleDTOFromRepo());
       UserEntity userEntity = userMapper.toEntity(userDTO);
       userEntityRepository.save(userEntity);
     } else {
@@ -74,8 +72,10 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
     return userEntity;
   }
   
-  private RoleDTO getCustomerRoleDTOFromRepo() {
+  private Set<RoleDTO> getCustomerRoleDTOFromRepo() {
+    Set<RoleDTO> roleDTOSet = new HashSet<>();
     RoleEntity roleEntity = roleEntityRepository.getOne(3L);
-    return roleMapper.toDTO(roleEntity);
+    roleDTOSet.add(roleMapper.toDTO(roleEntity));
+    return roleDTOSet;
   }
 }
