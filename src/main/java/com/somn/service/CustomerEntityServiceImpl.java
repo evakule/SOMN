@@ -8,7 +8,7 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
-import com.somn.service.exception.SomnUserDeletingException;
+import com.somn.service.exception.UnableDeleteAdminException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +30,8 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private static final String ROLE_ADMIN = "ROLE_ADMIN";
   private static final Long ROLE_CUSTOMER_ID = 3L;
   
-  @Value("${somn.user.admin-deleting-exception}")
-  private String adminDeletingException;
+  @Value("${somn.user.unable-delete-admin-exception}")
+  private String unableDeleteAdminMessage;
   
   @Override
   public List<UserDTO> getAllCustomers() {
@@ -56,14 +56,14 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   
   @Override
   public void deactivateCustomer(Long id)
-      throws SomnUserDeletingException {
+      throws UnableDeleteAdminException {
     UserEntity userEntity = userEntityRepository.getOne(id);
     boolean isContainsAdminRole = userEntity.getRoles().stream()
         .anyMatch(roleEntity -> roleEntity
             .getRoleName()
             .contains(ROLE_ADMIN));
     if (isContainsAdminRole) {
-      throw new SomnUserDeletingException(adminDeletingException);
+      throw new UnableDeleteAdminException(unableDeleteAdminMessage);
     }
     userEntity.setUserStatus("deactivated");
     userEntityRepository.save(userEntity);
