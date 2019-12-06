@@ -3,9 +3,9 @@ package com.somn.service.exception;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class SomnUserCreatingException extends Exception {
+public class UnableDeleteAdminException extends Exception {
   
-  public SomnUserCreatingException(String message) {
+  public UnableDeleteAdminException(String message) {
     super(message);
   }
 }

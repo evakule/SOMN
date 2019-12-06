@@ -8,7 +8,7 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
-import com.somn.service.exception.SomnUserCreatingException;
+import com.somn.service.exception.UnableDeleteAdminException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -39,7 +39,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   
   @Override
   public void createCustomer(UserDTO userDTO)
-      throws SomnUserCreatingException {
+      throws UnableDeleteAdminException {
     UserEntity userFromDb =
         userEntityRepository.findByFirstName(userDTO.getFirstName());
     if (userFromDb == null) {
@@ -49,7 +49,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
       UserEntity userEntity = userMapper.toEntity(userDTO);
       userEntityRepository.save(userEntity);
     } else {
-      throw new SomnUserCreatingException(userCreatingException);
+      throw new UnableDeleteAdminException(userCreatingException);
     }
   }
   

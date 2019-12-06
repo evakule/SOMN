@@ -2,7 +2,7 @@ package com.somn.service;
 
 import com.somn.dto.UserDTO;
 
-import com.somn.service.exception.SomnUserCreatingException;
+import com.somn.service.exception.UnableDeleteAdminException;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public interface CustomerEntityService extends UserDetailsService {
   List<UserDTO> getAllCustomers();
   
   void createCustomer(UserDTO userDTO)
-      throws SomnUserCreatingException;
+      throws UnableDeleteAdminException;
   
   UserDTO getById(Long id);
   
