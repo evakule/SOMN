@@ -6,6 +6,8 @@ import com.somn.mappers.AccountantAccountMapper;
 import com.somn.mappers.CustomerAccountMapper;
 import com.somn.model.AccountEntity;
 import com.somn.repository.AccountEntityRepository;
+import com.somn.repository.UserEntityRepository;
+import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 
 import java.util.List;
@@ -25,7 +27,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Value("${somn.balance.withdraw-exception-message}")
   private String balanceWithdrawExceptionMessage;
   @Value("${somn.balance.store-limit-exception-message}")
-  private String balanceStoreLimitException;
+  private String balanceStoreLimitMessage;
+  @Value("${somn.user.no-such-user-exception}")
+  private String noSuchUserMessage;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -35,6 +39,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   
   @Autowired
   private CustomerAccountMapper customerAccountMapper;
+  
+  @Autowired
+  private UserEntityRepository userEntityRepository;
   
   @Override
   public List<AccountantAccountDTO> getAllAccounts() {
@@ -49,14 +56,19 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void createAccount(final AccountantAccountDTO accountantAccountDTO) {
+  public void createAccount(final AccountantAccountDTO accountantAccountDTO)
+      throws NoSuchUserException {
+    Long userId = accountantAccountDTO.getUserId();
+    if (!userEntityRepository.existsById(userId)) {
+      throw new NoSuchUserException(noSuchUserMessage);
+    }
     AccountEntity accountEntity = accountantAccountMapper.toEntity(accountantAccountDTO);
     accountEntity.setBalance(0);
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public List<CustomerAccountDTO> getAllCustomerAccountsById(Long id) {
+  public List<CustomerAccountDTO> getAllCustomerAccountsById(final Long id) {
     List<AccountEntity> accountEntityList = accountEntityRepository.getAllByUserEntityId(id);
     return customerAccountMapper.toDtoList(accountEntityList);
   }
@@ -91,7 +103,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
       throw new SomnLimitExceedException(operationValueExceptionMessage);
     }
     if (amount + oldBalance > balanceLimit) {
-      throw new SomnLimitExceedException(balanceStoreLimitException);
+      throw new SomnLimitExceedException(balanceStoreLimitMessage);
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);

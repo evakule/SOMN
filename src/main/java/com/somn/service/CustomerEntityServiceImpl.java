@@ -90,7 +90,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   
   private Set<RoleDTO> getCustomerRoleDTOFromRepo() {
     Set<RoleDTO> roleDTOSet = new HashSet<>();
-    RoleEntity roleEntity = roleEntityRepository.getOne(3L);
+    RoleEntity roleEntity = roleEntityRepository.getOne(ROLE_CUSTOMER_ID);
     roleDTOSet.add(roleMapper.toDTO(roleEntity));
     return roleDTOSet;
   }
