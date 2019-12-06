@@ -10,7 +10,6 @@ import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
 import com.somn.service.exception.SomnUserDeletingException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +65,8 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
     if (isContainsAdminRole) {
       throw new SomnUserDeletingException(adminDeletingException);
     }
-    userEntityRepository.deleteById(id);
+    userEntity.setUserStatus("deactivated");
+    userEntityRepository.save(userEntity);
   }
   
   @Override
