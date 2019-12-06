@@ -5,7 +5,7 @@ import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.UserDTO;
 import com.somn.service.CustomerEntityService;
 
-import com.somn.service.exception.UnableDeleteAdminException;
+import com.somn.service.exception.UserAlreadyExistException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -92,7 +92,7 @@ public final class CustomerController {
     } else {
       try {
         customerEntityService.createCustomer(userDTO);
-      } catch (UnableDeleteAdminException e) {
+      } catch (UserAlreadyExistException e) {
         return new ResponseEntity<>(
             e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
       }

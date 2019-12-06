@@ -3,9 +3,9 @@ package com.somn.service.exception;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class UnableDeleteAdminException extends Exception {
+public class UserAlreadyExistException extends Exception {
   
-  public UnableDeleteAdminException(String message) {
+  public UserAlreadyExistException(String message) {
     super(message);
   }
 }

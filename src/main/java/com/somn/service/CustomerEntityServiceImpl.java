@@ -8,7 +8,7 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
-import com.somn.service.exception.UnableDeleteAdminException;
+import com.somn.service.exception.UserAlreadyExistException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,8 +28,8 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   private final UserMapper userMapper;
   private final RoleMapper roleMapper;
   
-  @Value("${somn.user.creating-exception}")
-  private String userCreatingException;
+  @Value("${somn.user.already-exist-exception}")
+  private String userAlreadyExistMessage;
   
   @Override
   public List<UserDTO> getAllCustomers() {
@@ -39,7 +39,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   
   @Override
   public void createCustomer(UserDTO userDTO)
-      throws UnableDeleteAdminException {
+      throws UserAlreadyExistException {
     UserEntity userFromDb =
         userEntityRepository.findByFirstName(userDTO.getFirstName());
     if (userFromDb == null) {
@@ -49,7 +49,7 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
       UserEntity userEntity = userMapper.toEntity(userDTO);
       userEntityRepository.save(userEntity);
     } else {
-      throw new UnableDeleteAdminException(userCreatingException);
+      throw new UserAlreadyExistException(userAlreadyExistMessage);
     }
   }
   
