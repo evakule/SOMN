@@ -4,6 +4,7 @@ import com.somn.controller.response.ResponseCode;
 import com.somn.controller.response.ResponseMessage;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
+import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
@@ -100,11 +101,16 @@ public class AccountController {
   ) {
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    } else {
-      accountEntityService.createAccount(accountantAccountDTO);
-      return new ResponseEntity<>(
-          ResponseMessage.ACCOUNT_CREATED.getMessage(), HttpStatus.CREATED);
     }
+    try {
+      accountEntityService.createAccount(accountantAccountDTO);
+    } catch (NoSuchUserException e) {
+      return new ResponseEntity<>(
+          e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+    }
+    return new ResponseEntity<>(
+        ResponseMessage.ACCOUNT_CREATED.getMessage(), HttpStatus.CREATED);
+    
   }
   
   @ApiOperation("Remove an account. Used by accountant.")

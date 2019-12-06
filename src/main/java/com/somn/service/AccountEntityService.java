@@ -3,6 +3,7 @@ package com.somn.service;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 
+import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 
 import java.util.List;
@@ -12,7 +13,8 @@ public interface AccountEntityService {
   
   AccountantAccountDTO getById(Long id);
   
-  void createAccount(AccountantAccountDTO accountantAccountDTO);
+  void createAccount(AccountantAccountDTO accountantAccountDTO)
+      throws NoSuchUserException;
   
   void deleteAccount(Long id);
   
