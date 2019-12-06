@@ -9,6 +9,7 @@ import com.somn.model.UserEntity;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
 import com.somn.service.exception.UnableDeleteAdminException;
+import com.somn.service.exception.UserAlreadyExistException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,9 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   @Value("${somn.user.unable-delete-admin-exception}")
   private String unableDeleteAdminMessage;
   
+  @Value("${somn.user.already-exist-exception}")
+  private String userAlreadyExistMessage;
+  
   @Override
   public List<UserDTO> getAllCustomers() {
     List<UserEntity> userEntityList = userEntityRepository.findAll();
@@ -40,12 +44,17 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
   }
   
   @Override
-  public void createCustomer(UserDTO userDTO) {
-    Set<RoleDTO> roleDTOSet = new HashSet<>();
-    roleDTOSet.add(getCustomerRoleDTOFromRepo());
-    userDTO.setRoles(roleDTOSet);
-    UserEntity userEntity = userMapper.toEntity(userDTO);
-    userEntityRepository.save(userEntity);
+  public void createCustomer(UserDTO userDTO)
+      throws UserAlreadyExistException {
+    UserEntity userFromDb =
+        userEntityRepository.findByFirstName(userDTO.getFirstName());
+    if (userFromDb == null) {
+      userDTO.setRoles(getCustomerRoleDTOFromRepo());
+      UserEntity userEntity = userMapper.toEntity(userDTO);
+      userEntityRepository.save(userEntity);
+    } else {
+      throw new UserAlreadyExistException(userAlreadyExistMessage);
+    }
   }
   
   @Override
@@ -79,8 +88,10 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
     return userEntity;
   }
   
-  private RoleDTO getCustomerRoleDTOFromRepo() {
-    RoleEntity roleEntity = roleEntityRepository.getOne(ROLE_CUSTOMER_ID);
-    return roleMapper.toDTO(roleEntity);
+  private Set<RoleDTO> getCustomerRoleDTOFromRepo() {
+    Set<RoleDTO> roleDTOSet = new HashSet<>();
+    RoleEntity roleEntity = roleEntityRepository.getOne(3L);
+    roleDTOSet.add(roleMapper.toDTO(roleEntity));
+    return roleDTOSet;
   }
 }
