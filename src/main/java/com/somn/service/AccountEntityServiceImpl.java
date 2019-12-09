@@ -5,10 +5,12 @@ import com.somn.dto.CustomerAccountDTO;
 import com.somn.mappers.AccountantAccountMapper;
 import com.somn.mappers.CustomerAccountMapper;
 import com.somn.model.AccountEntity;
+import com.somn.model.status.AccountStatus;
 import com.somn.repository.AccountEntityRepository;
 import com.somn.repository.UserEntityRepository;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
+import com.somn.service.exception.UnableActivateAccountException;
 
 import java.util.List;
 
@@ -30,6 +32,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private String balanceStoreLimitMessage;
   @Value("${somn.user.no-such-user-message}")
   private String noSuchUserMessage;
+  @Value("${somn.account.unable-activate-account-message}")
+  private String unableActivateAccountMessage;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -74,8 +78,21 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   }
   
   @Override
-  public void deleteAccount(final Long id) {
-    accountEntityRepository.deleteById(id);
+  public void deactivateAccount(final Long id) {
+    AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    accountEntityRepository.save(accountEntity);
+  }
+  
+  @Override
+  public void activateAccount(Long id)
+      throws UnableActivateAccountException {
+    AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    if (accountEntity.getAccountStatus().equals(AccountStatus.ACTIVE)) {
+      throw new UnableActivateAccountException(unableActivateAccountMessage);
+    }
+    accountEntity.setAccountStatus(AccountStatus.ACTIVE);
+    accountEntityRepository.save(accountEntity);
   }
   
   @Override

@@ -9,6 +9,7 @@ import com.somn.service.AccountEntityService;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 
+import com.somn.service.exception.UnableActivateAccountException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -130,9 +131,30 @@ public class AccountController {
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      accountEntityService.deleteAccount(id);
+      accountEntityService.deactivateAccount(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+  }
+  
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
+  @PutMapping(value = "{id}/activation")
+  public ResponseEntity<?> activateAccount(
+      @PathVariable("id") Long id
+  ) {
+    AccountantAccountDTO accountantAccountDTO =
+        accountEntityService.getById(id);
+    if (accountantAccountDTO == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      try {
+        accountEntityService.activateAccount(id);
+      } catch (UnableActivateAccountException e) {
+        return new ResponseEntity<>(
+            e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      }
+    }
+    return new ResponseEntity<>(
+        ResponseMessage.ACCOUNT_ACTIVATED.getMessage(), HttpStatus.OK);
   }
   
   @ApiOperation("Withdraw money from account. Used by customer.")

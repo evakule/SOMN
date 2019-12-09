@@ -7,6 +7,7 @@ import com.somn.model.status.AccountStatus;
 import com.somn.model.status.UserStatus;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
+import com.somn.service.exception.UnableActivateAccountException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -70,6 +71,13 @@ public class AccountEntityServiceImplTest {
     accountEntityService.depositMoney(1L, 1000000);
   }
   
+  @Test(expected = UnableActivateAccountException.class)
+  public void activateAccountNegativeScenario() throws UnableActivateAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    accountEntityService.activateAccount(1L);
+  }
+  
   @Test
   public void withdrawMoneyFromAccountPositiveScenario() throws SomnLimitExceedException {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
@@ -84,5 +92,13 @@ public class AccountEntityServiceImplTest {
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     accountEntityService.depositMoney(1L, 100);
     Assertions.assertEquals(50150, mockRepository.getOne(1L).getBalance());
+  }
+  
+  @Test
+  public void activateAccountPositiveScenario() throws UnableActivateAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    accountEntityService.activateAccount(1L);
   }
 }

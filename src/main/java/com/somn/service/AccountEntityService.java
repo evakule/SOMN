@@ -5,6 +5,7 @@ import com.somn.dto.CustomerAccountDTO;
 
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
+import com.somn.service.exception.UnableActivateAccountException;
 
 import java.util.List;
 
@@ -16,7 +17,10 @@ public interface AccountEntityService {
   void createAccount(AccountantAccountDTO accountantAccountDTO)
       throws NoSuchUserException;
   
-  void deleteAccount(Long id);
+  void deactivateAccount(Long id);
+  
+  void activateAccount(Long id)
+      throws UnableActivateAccountException;
   
   List<CustomerAccountDTO> getAllCustomerAccountsById(Long id);
   

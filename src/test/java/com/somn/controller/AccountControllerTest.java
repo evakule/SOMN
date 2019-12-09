@@ -96,8 +96,9 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "[{\"id\":2,\"accountStatus\":\"ACTIVE\",\"userId\":3}," +
-            "{\"id\":3,\"accountStatus\":\"ACTIVE\",\"userId\":3}]"));
+            "[{\"id\":1,\"accountStatus\":\"DEACTIVATED\",\"userId\":2}," +
+                "{\"id\":2,\"accountStatus\":\"ACTIVE\",\"userId\":3}," +
+                "{\"id\":3,\"accountStatus\":\"ACTIVE\",\"userId\":3}]"));
   }
   
   @Test
