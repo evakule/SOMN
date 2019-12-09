@@ -1,16 +1,19 @@
 package com.somn.dto;
 
+import com.somn.model.status.UserStatus;
 import io.swagger.annotations.ApiModel;
 
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Set;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotNull;
 
 @ApiModel(
     value = "User",
@@ -44,7 +47,8 @@ public class UserDTO {
       example = "inactive",
       position = 3)
   @NotNull
-  private String userStatus;
+  @Enumerated(EnumType.STRING)
+  private UserStatus userStatus;
   
   @ApiModelProperty(
       notes = "Set of roles which give some authorities to a user",

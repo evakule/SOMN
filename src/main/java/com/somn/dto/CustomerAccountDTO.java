@@ -1,5 +1,6 @@
 package com.somn.dto;
 
+import com.somn.model.status.AccountStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class CustomerAccountDTO extends AccountantAccountDTO {
   public CustomerAccountDTO(
       Long id,
       Integer balance,
-      String accountStatus,
+      AccountStatus accountStatus,
       Long userId
   ) {
     super(id, accountStatus, userId);

@@ -1,8 +1,11 @@
 package com.somn.dto;
 
+import com.somn.model.status.AccountStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -26,7 +29,8 @@ public class AccountantAccountDTO {
       example = "active",
       position = 2)
   @NotNull
-  private String accountStatus;
+  @Enumerated(EnumType.STRING)
+  private AccountStatus accountStatus;
   
   @ApiModelProperty(
       notes = "Account holder id.",

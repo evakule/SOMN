@@ -2,6 +2,7 @@ package com.somn.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.somn.dto.CustomerAccountDTO;
+import com.somn.model.status.AccountStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,11 @@ class AccountControllerTest {
   @Autowired
   private MockMvc mockMvc;
   
-  private CustomerAccountDTO accountEntity = new CustomerAccountDTO(4L, 1000, "active", 3L);
+  private CustomerAccountDTO accountEntity = new CustomerAccountDTO(
+      4L,
+      1000,
+      AccountStatus.ACTIVE,
+      3L);
   
   @Test
   @WithMockUser(roles = {"ACCOUNTANT"})
@@ -44,9 +49,9 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "[{\"id\":1,\"accountStatus\":\"active\",\"userId\":2}," +
-            "{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}," +
-            "{\"id\":3,\"accountStatus\":\"active\",\"userId\":3}]"));
+            "[{\"id\":1,\"accountStatus\":\"ACTIVE\",\"userId\":2}," +
+            "{\"id\":2,\"accountStatus\":\"ACTIVE\",\"userId\":3}," +
+            "{\"id\":3,\"accountStatus\":\"ACTIVE\",\"userId\":3}]"));
   }
   
   @Test
@@ -56,7 +61,7 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}"));
+            "{\"id\":2,\"accountStatus\":\"ACTIVE\",\"userId\":3}"));
   }
   
   @Test
@@ -74,7 +79,7 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "{\"id\":4,\"accountStatus\":\"active\",\"userId\":3}"));
+            "{\"id\":4,\"accountStatus\":\"ACTIVE\",\"userId\":3}"));
   }
   
   @Test
@@ -91,8 +96,8 @@ class AccountControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string(
-            "[{\"id\":2,\"accountStatus\":\"active\",\"userId\":3}," +
-            "{\"id\":3,\"accountStatus\":\"active\",\"userId\":3}]"));
+            "[{\"id\":2,\"accountStatus\":\"ACTIVE\",\"userId\":3}," +
+            "{\"id\":3,\"accountStatus\":\"ACTIVE\",\"userId\":3}]"));
   }
   
   @Test

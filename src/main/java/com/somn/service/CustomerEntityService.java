@@ -2,6 +2,7 @@ package com.somn.service;
 
 import com.somn.dto.UserDTO;
 
+import com.somn.service.exception.UnableActivateCustomerException;
 import com.somn.service.exception.UnableDeleteAdminException;
 
 import com.somn.service.exception.UserAlreadyExistException;
@@ -18,5 +19,9 @@ public interface CustomerEntityService extends UserDetailsService {
   
   UserDTO getById(Long id);
   
-  void deactivateCustomer(Long id) throws UnableDeleteAdminException;
+  void deactivateCustomer(Long id)
+      throws UnableDeleteAdminException;
+  
+  void activateCustomer(Long id)
+      throws UnableActivateCustomerException;
 }

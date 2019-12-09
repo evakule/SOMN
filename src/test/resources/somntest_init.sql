@@ -8,14 +8,14 @@ CREATE TABLE users
     id                 BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     first_name         VARCHAR(100)                      NOT NULL,
     encrypted_password VARCHAR(255)                      NOT NULL,
-    user_status        VARCHAR(50)                       NOT NULL
+    user_status        ENUM('ACTIVE', 'DEACTIVATED')     NOT NULL
 );
 
 CREATE TABLE accounts
 (
     id             BIGINT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     balance        INT                               NOT NULL,
-    account_status VARCHAR(50)                       NOT NULL,
+    account_status ENUM('ACTIVE', 'DEACTIVATED')     NOT NULL,
     user_id        BIGINT REFERENCES users (id)
 );
 

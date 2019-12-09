@@ -1,5 +1,7 @@
 package com.somn.model;
 
+import com.somn.model.status.UserStatus;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +9,8 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -40,7 +44,8 @@ public class UserEntity extends BaseEntity implements UserDetails {
   @Column(name = "encrypted_password")
   private String encryptedPassword;
   @Column(name = "user_status")
-  private String userStatus;
+  @Enumerated(EnumType.STRING)
+  private UserStatus userStatus;
   
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "FK_USER_ROLE",
@@ -48,7 +53,10 @@ public class UserEntity extends BaseEntity implements UserDetails {
       inverseJoinColumns = {@JoinColumn(name = "role_id")})
   private Set<RoleEntity> roles;
   
-  @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToMany(
+      mappedBy = "userEntity",
+      fetch = FetchType.LAZY,
+      cascade = CascadeType.ALL)
   private List<AccountEntity> accounts;
   
   @Override
@@ -83,6 +91,6 @@ public class UserEntity extends BaseEntity implements UserDetails {
   
   @Override
   public boolean isEnabled() {
-    return userStatus.equals("active");
+    return userStatus.equals(UserStatus.ACTIVE);
   }
 }
