@@ -136,6 +136,15 @@ public class AccountController {
     }
   }
   
+  @ApiOperation("Activate an account. Used by accountant.")
+  @ApiResponses(value = {
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no account associated with this id."),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Account already activated"),
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Account successfully activated")
+  })
   @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
   @PutMapping(value = "{id}/activation")
   public ResponseEntity<?> activateAccount(
