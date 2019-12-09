@@ -1,6 +1,10 @@
 package com.somn.service;
 
 import com.somn.model.AccountEntity;
+import com.somn.model.RoleEntity;
+import com.somn.model.UserEntity;
+import com.somn.model.status.AccountStatus;
+import com.somn.model.status.UserStatus;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
 import org.junit.Before;
@@ -13,6 +17,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AccountEntityServiceImplTest {
@@ -23,10 +31,29 @@ public class AccountEntityServiceImplTest {
   private AccountEntityService accountEntityService;
   
   private AccountEntity accountEntity;
+  private UserEntity userEntity;
+  private Set<RoleEntity> roleEntities;
+  
+  @Before
+  public void getRole() {
+    roleEntities = new HashSet<>();
+    RoleEntity roleEntity = new RoleEntity("ROLE_ADMIN");
+    roleEntities.add(roleEntity);
+  }
+  
+  @Before
+  public void getCustomer() {
+    userEntity = new UserEntity("Egor",
+        "1234",
+        UserStatus.ACTIVE,
+        roleEntities,
+        new ArrayList<>()
+    );
+  }
   
   @Before
   public void getAccount() {
-    accountEntity = new AccountEntity(50050, "active");
+    accountEntity = new AccountEntity(50050, AccountStatus.ACTIVE, userEntity);
   }
   
   @Test(expected = SomnLimitExceedException.class)

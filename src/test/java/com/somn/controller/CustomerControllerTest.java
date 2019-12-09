@@ -2,6 +2,7 @@ package com.somn.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.somn.model.UserEntity;
+import com.somn.model.status.UserStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ class CustomerControllerTest {
       "Alex",
       "$2a$04$0bFPDA4bcQApDiCTJGl0mebHJp" +
           ".YpygxuHuq0i00vovpazixQvUqu", //123
-      "active",
+      UserStatus.ACTIVE,
       new HashSet<>(),
       new ArrayList<>()
   );
@@ -50,7 +51,7 @@ class CustomerControllerTest {
   private UserEntity existingUserEntity = new UserEntity(
       "Egor",
       "$2a$04$0FyGGlHgZ9kxQovOVQtkpeYExkR2tCb6R1aXws79zV2kWnqGl3h32",
-      "active",
+      UserStatus.ACTIVE,
       new HashSet<>(),
       new ArrayList<>()
   );
@@ -62,13 +63,13 @@ class CustomerControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string(
             "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":\"Vakulenko\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
                 +
                 "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
                 +
                 "{\"id\":3,\"firstName\":\"Vasya\",\"encryptedPassword\":\"Antonov\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
   }
   
   @Test
@@ -78,7 +79,7 @@ class CustomerControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string(
             "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}"));
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}"));
   }
   
   @Test
@@ -97,7 +98,7 @@ class CustomerControllerTest {
         .andExpect(content().string(
             "{\"id\":4,\"firstName\":\"Alex\",\"encryptedPassword\":" +
                 "\"$2a$04$0bFPDA4bcQApDiCTJGl0mebHJp.YpygxuHuq0i00vovpazixQvUqu\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}"));
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}"));
   }
   
   @Test
@@ -114,13 +115,13 @@ class CustomerControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string(
             "[{\"id\":1,\"firstName\":\"Egor\",\"encryptedPassword\":\"Vakulenko\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":1,\"roleName\":\"ADMIN\"}]},"
                 +
                 "{\"id\":2,\"firstName\":\"Andrew\",\"encryptedPassword\":\"Kos\"," +
-                "\"userStatus\":\"active\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
+                "\"userStatus\":\"ACTIVE\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]},"
                 +
                 "{\"id\":3,\"firstName\":\"Vasya\",\"encryptedPassword\":\"Antonov\"," +
-                "\"userStatus\":\"deactivated\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
+                "\"userStatus\":\"DEACTIVATED\",\"roles\":[{\"id\":3,\"roleName\":\"CUSTOMER\"}]}]"));
   }
   
   @Test

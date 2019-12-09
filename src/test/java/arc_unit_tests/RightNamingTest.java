@@ -7,6 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
+
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 class RightNamingTest {
@@ -63,6 +66,10 @@ class RightNamingTest {
     ArchRule modelNamingRule = classes()
         .that()
         .resideInAPackage("..model..")
+        .and()
+        .areAnnotatedWith(Entity.class)
+        .or()
+        .areAnnotatedWith(MappedSuperclass.class)
         .should()
         .haveSimpleNameContaining("Entity");
   

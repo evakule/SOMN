@@ -6,8 +6,10 @@ import com.somn.mappers.RoleMapper;
 import com.somn.mappers.UserMapper;
 import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
+import com.somn.model.status.UserStatus;
 import com.somn.repository.RoleEntityRepository;
 import com.somn.repository.UserEntityRepository;
+import com.somn.service.exception.UnableActivateCustomerException;
 import com.somn.service.exception.UnableDeleteAdminException;
 import com.somn.service.exception.UserAlreadyExistException;
 
@@ -23,19 +25,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerEntityServiceImpl implements CustomerEntityService {
+public final class CustomerEntityServiceImpl implements CustomerEntityService {
+  @Value("${somn.user.unable-delete-admin-message}")
+  private String unableDeleteAdminMessage;
+  @Value("${somn.user.already-exist-message}")
+  private String userAlreadyExistMessage;
+  @Value("${somn.user.already-activated}")
+  private String unableActivateCustomerMessage;
+  
   private final UserEntityRepository userEntityRepository;
   private final RoleEntityRepository roleEntityRepository;
   private final UserMapper userMapper;
   private final RoleMapper roleMapper;
   private static final String ROLE_ADMIN = "ROLE_ADMIN";
   private static final Long ROLE_CUSTOMER_ID = 3L;
-  
-  @Value("${somn.user.unable-delete-admin-message}")
-  private String unableDeleteAdminMessage;
-  
-  @Value("${somn.user.already-exist-message}")
-  private String userAlreadyExistMessage;
   
   @Override
   public List<UserDTO> getAllCustomers() {
@@ -74,9 +77,21 @@ public class CustomerEntityServiceImpl implements CustomerEntityService {
     if (isContainsAdminRole) {
       throw new UnableDeleteAdminException(unableDeleteAdminMessage);
     }
-    userEntity.setUserStatus("deactivated");
+    userEntity.setUserStatus(UserStatus.DEACTIVATED);
     userEntityRepository.save(userEntity);
   }
+  
+  @Override
+  public void activateCustomer(Long id)
+      throws UnableActivateCustomerException {
+    UserEntity userEntity = userEntityRepository.getOne(id);
+    if (userEntity.getUserStatus().equals(UserStatus.ACTIVE)) {
+      throw new UnableActivateCustomerException(unableActivateCustomerMessage);
+    }
+    userEntity.setUserStatus(UserStatus.ACTIVE);
+    userEntityRepository.save(userEntity);
+  }
+  
   
   @Override
   public UserDetails loadUserByUsername(String firstName)
