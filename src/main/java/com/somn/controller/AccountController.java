@@ -6,6 +6,7 @@ import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
+import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 
@@ -183,7 +184,7 @@ public class AccountController {
   ) {
     try {
       accountEntityService.withdrawMoneyFromAccount(id, amount);
-    } catch (SomnLimitExceedException e) {
+    } catch (SomnLimitExceedException | DeactivatedAccountException e) {
       return new ResponseEntity<>(
           e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
@@ -209,7 +210,7 @@ public class AccountController {
   ) {
     try {
       accountEntityService.depositMoney(id, amount);
-    } catch (SomnLimitExceedException e) {
+    } catch (SomnLimitExceedException | DeactivatedAccountException e) {
       return new ResponseEntity<>(
           e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }

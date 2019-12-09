@@ -8,6 +8,7 @@ import com.somn.model.AccountEntity;
 import com.somn.model.status.AccountStatus;
 import com.somn.repository.AccountEntityRepository;
 import com.somn.repository.UserEntityRepository;
+import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.service.exception.UnableActivateAccountException;
@@ -34,6 +35,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private String noSuchUserMessage;
   @Value("${somn.account.unable-activate-account-message}")
   private String unableActivateAccountMessage;
+  @Value("${somn.account.deactivated-account-message}")
+  private String deactivatedAccountMessage;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -97,7 +100,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   
   @Override
   public void withdrawMoneyFromAccount(final Long id, final Integer amount)
-      throws SomnLimitExceedException {
+      throws SomnLimitExceedException, DeactivatedAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount < operationLimit) {
@@ -106,6 +109,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     if (amount > oldBalance) {
       throw new SomnLimitExceedException(balanceWithdrawExceptionMessage);
     }
+    if (accountEntity.getAccountStatus().equals(AccountStatus.DEACTIVATED)) {
+      throw new DeactivatedAccountException(deactivatedAccountMessage);
+    }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
     accountEntityRepository.save(accountEntity);
@@ -113,7 +119,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   
   @Override
   public void depositMoney(final Long id, final Integer amount)
-      throws SomnLimitExceedException {
+      throws SomnLimitExceedException, DeactivatedAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     Integer oldBalance = accountEntity.getBalance();
     if (amount < operationLimit) {
@@ -121,6 +127,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     if (amount + oldBalance > balanceLimit) {
       throw new SomnLimitExceedException(balanceStoreLimitMessage);
+    }
+    if (accountEntity.getAccountStatus().equals(AccountStatus.DEACTIVATED)) {
+      throw new DeactivatedAccountException(deactivatedAccountMessage);
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
