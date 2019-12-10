@@ -3,7 +3,11 @@ package com.somn.service;
 import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 
-import com.somn.service.exception.*;
+import com.somn.service.exception.DeactivatedAccountException;
+import com.somn.service.exception.NoSuchUserException;
+import com.somn.service.exception.SomnLimitExceedException;
+import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 
 import java.util.List;
 

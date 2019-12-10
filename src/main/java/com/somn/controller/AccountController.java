@@ -6,8 +6,12 @@ import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
-import com.somn.service.exception.*;
 
+import com.somn.service.exception.DeactivatedAccountException;
+import com.somn.service.exception.NoSuchUserException;
+import com.somn.service.exception.SomnLimitExceedException;
+import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
