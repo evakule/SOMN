@@ -121,7 +121,7 @@ public class AccountController {
       @ApiResponse(code = ResponseCode.NO_CONTENT, message =
           "Account removed successfully"),
       @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
-          "Account also deactivated."),
+          "Account already deactivated."),
       @ApiResponse(code = ResponseCode.NOT_FOUND, message =
           "There is no account associated with this id.")
   })
