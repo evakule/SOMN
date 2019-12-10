@@ -8,10 +8,12 @@ import com.somn.model.AccountEntity;
 import com.somn.model.status.AccountStatus;
 import com.somn.repository.AccountEntityRepository;
 import com.somn.repository.UserEntityRepository;
+
 import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 
 import java.util.List;
 
@@ -37,6 +39,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private String unableActivateAccountMessage;
   @Value("${somn.account.deactivated-account-message}")
   private String deactivatedAccountMessage;
+  @Value("${somn.account.unable-deactivate-account-message}")
+  private String unableDeactivateAccountMessage;
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -69,26 +73,32 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     if (!userEntityRepository.existsById(userId)) {
       throw new NoSuchUserException(noSuchUserMessage);
     }
-    AccountEntity accountEntity = accountantAccountMapper.toEntity(accountantAccountDTO);
+    AccountEntity accountEntity =
+        accountantAccountMapper.toEntity(accountantAccountDTO);
     accountEntity.setBalance(0);
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
   public List<CustomerAccountDTO> getAllCustomerAccountsById(final Long id) {
-    List<AccountEntity> accountEntityList = accountEntityRepository.getAllByUserEntityId(id);
+    List<AccountEntity> accountEntityList =
+        accountEntityRepository.getAllByUserEntityId(id);
     return customerAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
-  public void deactivateAccount(final Long id) {
+  public void deactivateAccount(final Long id)
+      throws UnableDeactivateAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    if (accountEntity.getAccountStatus().equals(AccountStatus.DEACTIVATED)) {
+      throw new UnableDeactivateAccountException(unableDeactivateAccountMessage);
+    }
     accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public void activateAccount(Long id)
+  public void activateAccount(final Long id)
       throws UnableActivateAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     if (accountEntity.getAccountStatus().equals(AccountStatus.ACTIVE)) {

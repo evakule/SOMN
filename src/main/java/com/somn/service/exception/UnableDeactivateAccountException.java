@@ -1,6 +1,11 @@
 package com.somn.service.exception;
 
-public class UnableDeactivateAccountException extends Throwable {
-  public UnableDeactivateAccountException(String unableDeactivateAccountMessage) {
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class UnableDeactivateAccountException extends Exception {
+  
+  public UnableDeactivateAccountException(String message) {
+    super(message);
   }
 }
