@@ -5,8 +5,10 @@ import com.somn.model.RoleEntity;
 import com.somn.model.UserEntity;
 import com.somn.model.status.AccountStatus;
 import com.somn.model.status.UserStatus;
+import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.repository.AccountEntityRepository;
+import com.somn.service.exception.UnableActivateAccountException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -57,21 +59,47 @@ public class AccountEntityServiceImplTest {
   }
   
   @Test(expected = SomnLimitExceedException.class)
-  public void withdrawMoneyFromAccountNegativeScenarios() throws SomnLimitExceedException {
+  public void withdrawMoneyFromAccountNegativeScenarios()
+      throws SomnLimitExceedException, DeactivatedAccountException {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     accountEntityService.withdrawMoneyFromAccount(1L, 9);
     accountEntityService.withdrawMoneyFromAccount(1L, 50051);
   }
   
   @Test(expected = SomnLimitExceedException.class)
-  public void depositMoneyNegativeScenarios() throws SomnLimitExceedException {
+  public void depositMoneyNegativeScenarios()
+      throws SomnLimitExceedException, DeactivatedAccountException {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     accountEntityService.depositMoney(1L, 9);
     accountEntityService.depositMoney(1L, 1000000);
   }
   
+  @Test(expected = UnableActivateAccountException.class)
+  public void activateAccountNegativeScenario() throws UnableActivateAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    accountEntityService.activateAccount(1L);
+  }
+  
+  @Test(expected = DeactivatedAccountException.class)
+  public void withdrawMoneyFromDeactivatedAccount()
+      throws SomnLimitExceedException, DeactivatedAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    accountEntityService.withdrawMoneyFromAccount(1L, 1000);
+  }
+  
+  @Test(expected = DeactivatedAccountException.class)
+  public void depositMoneyFromDeactivatedAccount()
+      throws SomnLimitExceedException, DeactivatedAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    accountEntityService.depositMoney(1L, 1000);
+  }
+  
   @Test
-  public void withdrawMoneyFromAccountPositiveScenario() throws SomnLimitExceedException {
+  public void withdrawMoneyFromAccountPositiveScenario()
+      throws SomnLimitExceedException, DeactivatedAccountException {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     accountEntityService.withdrawMoneyFromAccount(1L, 100);
@@ -79,10 +107,19 @@ public class AccountEntityServiceImplTest {
   }
   
   @Test
-  public void depositMoneyPositiveScenario() throws SomnLimitExceedException {
+  public void depositMoneyPositiveScenario()
+      throws SomnLimitExceedException, DeactivatedAccountException {
     Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
     Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
     accountEntityService.depositMoney(1L, 100);
     Assertions.assertEquals(50150, mockRepository.getOne(1L).getBalance());
+  }
+  
+  @Test
+  public void activateAccountPositiveScenario() throws UnableActivateAccountException {
+    Mockito.when(mockRepository.getOne(1L)).thenReturn(accountEntity);
+    Mockito.when(mockRepository.save(accountEntity)).thenReturn(accountEntity);
+    accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    accountEntityService.activateAccount(1L);
   }
 }

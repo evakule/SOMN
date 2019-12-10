@@ -6,9 +6,11 @@ import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
+import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 
+import com.somn.service.exception.UnableActivateAccountException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -130,9 +132,39 @@ public class AccountController {
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      accountEntityService.deleteAccount(id);
+      accountEntityService.deactivateAccount(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+  }
+  
+  @ApiOperation("Activate an account. Used by accountant.")
+  @ApiResponses(value = {
+      @ApiResponse(code = ResponseCode.NOT_FOUND, message =
+          "There is no account associated with this id."),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Account already activated"),
+      @ApiResponse(code = ResponseCode.OK, message =
+          "Account successfully activated")
+  })
+  @PreAuthorize("hasRole('ROLE_ACCOUNTANT')")
+  @PutMapping(value = "{id}/activation")
+  public ResponseEntity<?> activateAccount(
+      @PathVariable("id") Long id
+  ) {
+    AccountantAccountDTO accountantAccountDTO =
+        accountEntityService.getById(id);
+    if (accountantAccountDTO == null) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    } else {
+      try {
+        accountEntityService.activateAccount(id);
+      } catch (UnableActivateAccountException e) {
+        return new ResponseEntity<>(
+            e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      }
+    }
+    return new ResponseEntity<>(
+        ResponseMessage.ACCOUNT_ACTIVATED.getMessage(), HttpStatus.OK);
   }
   
   @ApiOperation("Withdraw money from account. Used by customer.")
@@ -152,7 +184,7 @@ public class AccountController {
   ) {
     try {
       accountEntityService.withdrawMoneyFromAccount(id, amount);
-    } catch (SomnLimitExceedException e) {
+    } catch (SomnLimitExceedException | DeactivatedAccountException e) {
       return new ResponseEntity<>(
           e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
@@ -178,7 +210,7 @@ public class AccountController {
   ) {
     try {
       accountEntityService.depositMoney(id, amount);
-    } catch (SomnLimitExceedException e) {
+    } catch (SomnLimitExceedException | DeactivatedAccountException e) {
       return new ResponseEntity<>(
           e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
     }
