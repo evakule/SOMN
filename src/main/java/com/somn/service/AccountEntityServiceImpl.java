@@ -60,16 +60,15 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Override
   public List<AccountantAccountDTO> getAllAccounts() {
     List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
-    log.debug("In getAllAccounts - {} accounts found",
-        accountEntityList.size());
+    log.debug("{} Accounts found", accountEntityList.size());
     return accountantAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
   public AccountantAccountDTO getById(final Long id) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
-    log.debug("In getById, account with id - '{}', found",
-        accountEntity.getId());
+    log.debug("Account of user - '{}', found",
+        accountEntity.getUserEntity().getFirstName());
     return accountantAccountMapper.toDTO(accountEntity);
   }
   
@@ -84,8 +83,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
         accountantAccountMapper.toEntity(accountantAccountDTO);
     accountEntity.setBalance(0);
     log.debug(
-        "In createAccount, new account was created, id - '{}'",
-        accountEntity.getId());
+        "New account of user - '{}', was created",
+        getFirstUserNameByAccount(accountEntity));
     accountEntityRepository.save(accountEntity);
   }
   
@@ -94,8 +93,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     List<AccountEntity> accountEntityList =
         accountEntityRepository.getAllByUserEntityId(id);
     log.debug(
-        "In getAllCustomerAccountsById, all accounts was found. Client id "
-            + "- '{}'", id);
+        "{} accounts of user - {}, was found",
+        accountEntityList.size(),
+        getFirstUserNameByAccount(accountEntityList.get(0)));
     return customerAccountMapper.toDtoList(accountEntityList);
   }
   
@@ -108,7 +108,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
     log.debug(
-        "In deactivateAccount, account with id - '{}', deactivated",
+        "Account of user {}, with id - '{}', deactivated",
+        getFirstUserNameByAccount(accountEntity),
         accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
@@ -122,7 +123,8 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     accountEntity.setAccountStatus(AccountStatus.ACTIVE);
     log.debug(
-        "In activateAccount, account with id - '{}', activated",
+        "Account of user {}, with id - '{}', activated",
+        getFirstUserNameByAccount(accountEntity),
         accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
@@ -144,8 +146,10 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
     log.debug(
-        "In withdrawMoneyFromAccount, money was withdraw from the account "
-            + "with id - '{}'", accountEntity.getId());
+        "Money of user - {}, was withdraw from the account "
+            + "with id - '{}'",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -166,8 +170,18 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
     log.debug(
-        "In depositMoney, money was deposited into the account "
-            + "with id - '{}'", accountEntity.getId());
+        "Money of user - {}, was deposited to the account "
+            + "with id - '{}'",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
+  }
+  
+  private String getFirstUserNameByAccount(AccountEntity accountEntity) {
+    return userEntityRepository.getOne(
+        accountEntity
+            .getUserEntity()
+            .getId())
+        .getFirstName();
   }
 }
