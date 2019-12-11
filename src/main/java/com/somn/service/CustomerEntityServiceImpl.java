@@ -18,12 +18,14 @@ import java.util.List;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Value("${somn.user.unable-delete-admin-message}")
@@ -43,6 +45,7 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public List<UserDTO> getAllCustomers() {
     List<UserEntity> userEntityList = userEntityRepository.findAll();
+    log.debug("In getAllCustomers - {} users found", userEntityList.size());
     return userMapper.toDtoList(userEntityList);
   }
   
@@ -54,6 +57,9 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
     if (userFromDb == null) {
       userDTO.setRoles(getCustomerRoleDTOFromRepo());
       UserEntity userEntity = userMapper.toEntity(userDTO);
+      log.debug(
+          "In createCustomer, new customer was created, id - '{}'",
+          userEntity.getId());
       userEntityRepository.save(userEntity);
     } else {
       throw new UserAlreadyExistException(userAlreadyExistMessage);
@@ -63,6 +69,7 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public UserDTO getById(Long id) {
     UserEntity userEntity = userEntityRepository.getOne(id);
+    log.debug("In getById, userEntity with id - '{}', found", userEntity.getId());
     return userMapper.toDTO(userEntity);
   }
   
@@ -78,6 +85,9 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
       throw new UnableDeleteAdminException(unableDeleteAdminMessage);
     }
     userEntity.setUserStatus(UserStatus.DEACTIVATED);
+    log.debug(
+        "In deactivateCustomer, customer with id - '{}', deactivated",
+        userEntity.getId());
     userEntityRepository.save(userEntity);
   }
   
@@ -89,6 +99,9 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
       throw new UnableActivateCustomerException(unableActivateCustomerMessage);
     }
     userEntity.setUserStatus(UserStatus.ACTIVE);
+    log.debug(
+        "In activateCustomer, customer with id - '{}', activated",
+        userEntity.getId());
     userEntityRepository.save(userEntity);
   }
   
@@ -100,6 +113,9 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
     if (userEntity == null) {
       throw new UsernameNotFoundException("User not found");
     }
+    log.debug(
+        "In loadUserByUsername, user with id - '{}', authenticated",
+        userEntity.getId());
     return userEntity;
   }
   

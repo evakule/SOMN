@@ -17,11 +17,13 @@ import com.somn.service.exception.UnableDeactivateAccountException;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public final class AccountEntityServiceImpl implements AccountEntityService {
   @Value("${somn.operation.limit}")
   private Integer operationLimit;
@@ -42,6 +44,7 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Value("${somn.account.unable-deactivate-account-message}")
   private String unableDeactivateAccountMessage;
   
+  
   @Autowired
   private AccountEntityRepository accountEntityRepository;
   
@@ -57,12 +60,16 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Override
   public List<AccountantAccountDTO> getAllAccounts() {
     List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
+    log.debug("In getAllAccounts - {} accounts found",
+        accountEntityList.size());
     return accountantAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
   public AccountantAccountDTO getById(final Long id) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    log.debug("In getById, account with id - '{}', found",
+        accountEntity.getId());
     return accountantAccountMapper.toDTO(accountEntity);
   }
   
@@ -76,6 +83,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     AccountEntity accountEntity =
         accountantAccountMapper.toEntity(accountantAccountDTO);
     accountEntity.setBalance(0);
+    log.debug(
+        "In createAccount, new account was created, id - '{}'",
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -83,6 +93,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   public List<CustomerAccountDTO> getAllCustomerAccountsById(final Long id) {
     List<AccountEntity> accountEntityList =
         accountEntityRepository.getAllByUserEntityId(id);
+    log.debug(
+        "In getAllCustomerAccountsById, all accounts was found. Client id "
+            + "- '{}'", id);
     return customerAccountMapper.toDtoList(accountEntityList);
   }
   
@@ -94,6 +107,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
       throw new UnableDeactivateAccountException(unableDeactivateAccountMessage);
     }
     accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    log.debug(
+        "In deactivateAccount, account with id - '{}', deactivated",
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -105,6 +121,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
       throw new UnableActivateAccountException(unableActivateAccountMessage);
     }
     accountEntity.setAccountStatus(AccountStatus.ACTIVE);
+    log.debug(
+        "In activateAccount, account with id - '{}', activated",
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -124,6 +143,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
+    log.debug(
+        "In withdrawMoneyFromAccount, money was withdraw from the account "
+            + "with id - '{}'", accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -143,6 +165,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
+    log.debug(
+        "In depositMoney, money was deposited into the account "
+            + "with id - '{}'", accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
 }
