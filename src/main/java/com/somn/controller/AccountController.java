@@ -6,11 +6,12 @@ import com.somn.dto.AccountantAccountDTO;
 import com.somn.dto.CustomerAccountDTO;
 import com.somn.model.UserEntity;
 import com.somn.service.AccountEntityService;
+
 import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
-
 import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -119,6 +120,8 @@ public class AccountController {
   @ApiResponses(value = {
       @ApiResponse(code = ResponseCode.NO_CONTENT, message =
           "Account removed successfully"),
+      @ApiResponse(code = ResponseCode.BAD_REQUEST, message =
+          "Account already deactivated."),
       @ApiResponse(code = ResponseCode.NOT_FOUND, message =
           "There is no account associated with this id.")
   })
@@ -132,7 +135,12 @@ public class AccountController {
     if (accountantAccountDTO == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     } else {
-      accountEntityService.deactivateAccount(id);
+      try {
+        accountEntityService.deactivateAccount(id);
+      } catch (UnableDeactivateAccountException e) {
+        return new ResponseEntity<>(
+            e.getLocalizedMessage(), HttpStatus.BAD_REQUEST);
+      }
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
   }

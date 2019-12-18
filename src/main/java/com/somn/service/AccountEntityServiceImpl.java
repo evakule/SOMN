@@ -8,18 +8,22 @@ import com.somn.model.AccountEntity;
 import com.somn.model.status.AccountStatus;
 import com.somn.repository.AccountEntityRepository;
 import com.somn.repository.UserEntityRepository;
+
 import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public final class AccountEntityServiceImpl implements AccountEntityService {
   @Value("${somn.operation.limit}")
   private Integer operationLimit;
@@ -37,6 +41,9 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   private String unableActivateAccountMessage;
   @Value("${somn.account.deactivated-account-message}")
   private String deactivatedAccountMessage;
+  @Value("${somn.account.unable-deactivate-account-message}")
+  private String unableDeactivateAccountMessage;
+  
   
   @Autowired
   private AccountEntityRepository accountEntityRepository;
@@ -53,12 +60,15 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
   @Override
   public List<AccountantAccountDTO> getAllAccounts() {
     List<AccountEntity> accountEntityList = accountEntityRepository.findAll();
+    log.debug("{} Accounts found", accountEntityList.size());
     return accountantAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
   public AccountantAccountDTO getById(final Long id) {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    log.debug("Account of user - '{}', found",
+        accountEntity.getUserEntity().getFirstName());
     return accountantAccountMapper.toDTO(accountEntity);
   }
   
@@ -69,32 +79,53 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     if (!userEntityRepository.existsById(userId)) {
       throw new NoSuchUserException(noSuchUserMessage);
     }
-    AccountEntity accountEntity = accountantAccountMapper.toEntity(accountantAccountDTO);
+    AccountEntity accountEntity =
+        accountantAccountMapper.toEntity(accountantAccountDTO);
     accountEntity.setBalance(0);
+    log.debug(
+        "New account of user - '{}', was created",
+        getFirstUserNameByAccount(accountEntity));
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
   public List<CustomerAccountDTO> getAllCustomerAccountsById(final Long id) {
-    List<AccountEntity> accountEntityList = accountEntityRepository.getAllByUserEntityId(id);
+    List<AccountEntity> accountEntityList =
+        accountEntityRepository.getAllByUserEntityId(id);
+    log.debug(
+        "{} accounts of user - {}, was found",
+        accountEntityList.size(),
+        getFirstUserNameByAccount(accountEntityList.get(0)));
     return customerAccountMapper.toDtoList(accountEntityList);
   }
   
   @Override
-  public void deactivateAccount(final Long id) {
+  public void deactivateAccount(final Long id)
+      throws UnableDeactivateAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
+    if (accountEntity.getAccountStatus().equals(AccountStatus.DEACTIVATED)) {
+      throw new UnableDeactivateAccountException(unableDeactivateAccountMessage);
+    }
     accountEntity.setAccountStatus(AccountStatus.DEACTIVATED);
+    log.debug(
+        "Account of user {}, with id - '{}', deactivated",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
   @Override
-  public void activateAccount(Long id)
+  public void activateAccount(final Long id)
       throws UnableActivateAccountException {
     AccountEntity accountEntity = accountEntityRepository.getOne(id);
     if (accountEntity.getAccountStatus().equals(AccountStatus.ACTIVE)) {
       throw new UnableActivateAccountException(unableActivateAccountMessage);
     }
     accountEntity.setAccountStatus(AccountStatus.ACTIVE);
+    log.debug(
+        "Account of user {}, with id - '{}', activated",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -114,6 +145,11 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     Integer newBalance = oldBalance - amount;
     accountEntity.setBalance(newBalance);
+    log.debug(
+        "Money of user - {}, was withdraw from the account "
+            + "with id - '{}'",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
   }
   
@@ -133,6 +169,19 @@ public final class AccountEntityServiceImpl implements AccountEntityService {
     }
     Integer newBalance = oldBalance + amount;
     accountEntity.setBalance(newBalance);
+    log.debug(
+        "Money of user - {}, was deposited to the account "
+            + "with id - '{}'",
+        getFirstUserNameByAccount(accountEntity),
+        accountEntity.getId());
     accountEntityRepository.save(accountEntity);
+  }
+  
+  private String getFirstUserNameByAccount(AccountEntity accountEntity) {
+    return userEntityRepository.getOne(
+        accountEntity
+            .getUserEntity()
+            .getId())
+        .getFirstName();
   }
 }

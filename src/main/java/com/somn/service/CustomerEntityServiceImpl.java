@@ -18,12 +18,14 @@ import java.util.List;
 import java.util.Set;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Value("${somn.user.unable-delete-admin-message}")
@@ -43,17 +45,21 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public List<UserDTO> getAllCustomers() {
     List<UserEntity> userEntityList = userEntityRepository.findAll();
+    log.debug("{} users found", userEntityList.size());
     return userMapper.toDtoList(userEntityList);
   }
   
   @Override
-  public void createCustomer(UserDTO userDTO)
+  public void createCustomer(final UserDTO userDTO)
       throws UserAlreadyExistException {
     UserEntity userFromDb =
         userEntityRepository.findByFirstName(userDTO.getFirstName());
     if (userFromDb == null) {
       userDTO.setRoles(getCustomerRoleDTOFromRepo());
       UserEntity userEntity = userMapper.toEntity(userDTO);
+      log.debug(
+          "New customer with first name - '{}', was created",
+          userEntity.getFirstName());
       userEntityRepository.save(userEntity);
     } else {
       throw new UserAlreadyExistException(userAlreadyExistMessage);
@@ -63,6 +69,8 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
   @Override
   public UserDTO getById(Long id) {
     UserEntity userEntity = userEntityRepository.getOne(id);
+    log.debug("User with first name - '{}', found",
+        userEntity.getFirstName());
     return userMapper.toDTO(userEntity);
   }
   
@@ -70,14 +78,14 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
   public void deactivateCustomer(Long id)
       throws UnableDeleteAdminException {
     UserEntity userEntity = userEntityRepository.getOne(id);
-    boolean isContainsAdminRole = userEntity.getRoles().stream()
-        .anyMatch(roleEntity -> roleEntity
-            .getRoleName()
-            .contains(ROLE_ADMIN));
-    if (isContainsAdminRole) {
+    boolean hasAdminRole = isContainsAdminRole(userEntity);
+    if (hasAdminRole) {
       throw new UnableDeleteAdminException(unableDeleteAdminMessage);
     }
     userEntity.setUserStatus(UserStatus.DEACTIVATED);
+    log.debug(
+        "Customer with first name - '{}', deactivated",
+        userEntity.getFirstName());
     userEntityRepository.save(userEntity);
   }
   
@@ -89,6 +97,9 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
       throw new UnableActivateCustomerException(unableActivateCustomerMessage);
     }
     userEntity.setUserStatus(UserStatus.ACTIVE);
+    log.debug(
+        "Customer with first name - '{}', activated",
+        userEntity.getFirstName());
     userEntityRepository.save(userEntity);
   }
   
@@ -100,6 +111,10 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
     if (userEntity == null) {
       throw new UsernameNotFoundException("User not found");
     }
+    log.debug(
+        "User with id - '{}', and first name - {}, authenticated",
+        userEntity.getId(),
+        userEntity.getFirstName());
     return userEntity;
   }
   
@@ -108,5 +123,12 @@ public final class CustomerEntityServiceImpl implements CustomerEntityService {
     RoleEntity roleEntity = roleEntityRepository.getOne(ROLE_CUSTOMER_ID);
     roleDTOSet.add(roleMapper.toDTO(roleEntity));
     return roleDTOSet;
+  }
+  
+  private boolean isContainsAdminRole(UserEntity userEntity) {
+    return userEntity.getRoles().stream()
+        .anyMatch(roleEntity -> roleEntity
+            .getRoleName()
+            .contains(ROLE_ADMIN));
   }
 }

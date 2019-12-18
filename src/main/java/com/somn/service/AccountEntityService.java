@@ -7,6 +7,7 @@ import com.somn.service.exception.DeactivatedAccountException;
 import com.somn.service.exception.NoSuchUserException;
 import com.somn.service.exception.SomnLimitExceedException;
 import com.somn.service.exception.UnableActivateAccountException;
+import com.somn.service.exception.UnableDeactivateAccountException;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface AccountEntityService {
   void createAccount(AccountantAccountDTO accountantAccountDTO)
       throws NoSuchUserException;
   
-  void deactivateAccount(Long id);
+  void deactivateAccount(Long id) throws UnableDeactivateAccountException;
   
   void activateAccount(Long id)
       throws UnableActivateAccountException;
